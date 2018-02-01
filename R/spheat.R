@@ -1,19 +1,4 @@
 
-
-
-###
-library(foreach)
-library(googleway)
-library(stringr)
-library(countrycode)
-library(dplyr)
-library(curl)
-library(sp)
-library(rgdal)
-
-
-
-
 print(paste("See developers.google.com/maps/documentation/javascript/get-api-key if you don't have an API key "))
 key <- readline(prompt="Enter Google API Key: ")
 key <- gsub(' ','',key)

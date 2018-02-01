@@ -1,17 +1,3 @@
-library(httr)
-library(rvest)
-library(tidyverse)
-library(raster)
-library(rgdal)
-library(reshape2)
-library(rangeBuilder)
-library(foreach)
-library(stringr)
-library(foreach)
-library(dplyr)
-
-
-
 
 getWPdatatypes <- function (country)  {
 ###standardize country name, takes care of stuff like Bolivia (Plurinational State of) or tildes like Côte d'Ivoire
