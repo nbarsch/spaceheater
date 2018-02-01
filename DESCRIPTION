@@ -7,22 +7,22 @@ Maintainer: neal.barsch@gmail.com
 Description: Downloads and automatically assesses spatial data given a dataset containing any sort of location data (GPS, place names)
 License: What license is it under?
 Imports: 
-httr, 
-revest, 
-tidyverse, 
-raster, 
-rgdal, 
-reshape2, 
-rangeBuilder,
-foreach, 
-stringr, 
-dplyr, 
-googleway, 
-stringr, 
-countrycode, 
-curl, 
-RCurl, 
-sp, 
-plyr
+      httr, 
+      revest, 
+      tidyverse, 
+      raster, 
+      rgdal, 
+      reshape2, 
+      rangeBuilder,
+      foreach, 
+      stringr, 
+      dplyr, 
+      googleway, 
+      stringr, 
+      countrycode, 
+      curl, 
+      RCurl, 
+      sp, 
+      plyr
 Encoding: UTF-8
 LazyData: true
