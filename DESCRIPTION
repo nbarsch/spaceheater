@@ -3,7 +3,7 @@ Type: Package
 Title: Spatial Download and Analysis in R
 Version: 0.1.0
 Author: Neal Thomas Barsch
-Maintainer: neal.barsch@gmail.com
+Maintainer: Neal Thomas Barsch <neal.barsch@gmail.com>
 Description: Downloads and automatically assesses spatial data given a dataset containing any sort of location data (GPS, place names)
 License: GPL-3
 Depends: R (>= 3.3.0)
@@ -24,5 +24,4 @@ Imports:
       RCurl, 
       sp, 
       plyr
-Encoding: UTF-8
-LazyData: true
+URL: https://github.com/nbarsch/spaceheater
