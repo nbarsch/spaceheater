@@ -5,7 +5,6 @@ export(spheatNames)
 export(spheatGPS)
 export(spheatLookup)
 
-import(httr)
 import(rvest)
 import(tidyverse)
 import(raster)
