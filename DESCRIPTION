@@ -8,7 +8,7 @@ Description: Downloads and automatically assesses spatial data given a dataset c
 License: What license is it under?
 Imports: 
       httr, 
-      revest, 
+      rvest, 
       tidyverse, 
       raster, 
       rgdal, 
