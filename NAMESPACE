@@ -2,7 +2,6 @@
 
 import(RCurl)
 import(countrycode)
-import(dplyr)
 import(foreach)
 import(googleway)
 import(httr)
