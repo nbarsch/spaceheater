@@ -3,6 +3,7 @@
 import(RCurl)
 import(countrycode)
 import(foreach)
+import(dplyr)
 import(googleway)
 import(httr)
 import(raster)
