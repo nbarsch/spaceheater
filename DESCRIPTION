@@ -25,3 +25,4 @@ Imports:
       sp, 
       plyr
 URL: https://github.com/nbarsch/spaceheater
+LazyData: TRUE
