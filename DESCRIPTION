@@ -11,6 +11,7 @@ Imports:
       httr, 
       rvest, 
       tidyverse, 
+      purrr,
       raster, 
       rgdal, 
       reshape2, 
