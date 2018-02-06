@@ -7,7 +7,7 @@
 \description{a vector of names in a dataset with administrative layers determined by GADM layers}
 
 \usage{
-spheatNames <- function (dataset, colname, googleapikey, oride=FALSE, deleteGADM=TRUE)}
+spheatNames(dataset, colname, googleapikey, oride=FALSE, deleteGADM=TRUE)}
 
 \arguments{
 
