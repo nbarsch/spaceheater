@@ -17,10 +17,9 @@ spheatNames(dataset, colname, googleapikey, oride=FALSE, deleteGADM=TRUE)}
 }
 \item{googleapikey}{(character), a valid Google Maps API key. See https://developers.google.com/maps/documentation/javascript/get-api-key to attain one.
 }
-\item{oride}{(logical), if you already have the specified shapefile downloads from GADM for each country in your data frame, you may override the GADM downloads included in a-heat using oride=TRUE. ONLY do this if you are sure you have the GADM shapefiles for every country in your set already in your R working directory. Default is FALSE}
+\item{oride}{(logical), if you already have the specified shapefile downloads from GADM for each country in your data frame, you may override the GADM downloads included in a-heat using oride=TRUE. ONLY do this if you are sure you have the GADM shapefiles for every country in your set already in your R working directory. Default is FALSE
 }
 \item{deleteGADM}{(logical), if after geocoding you would like to keep the GADM shapefiles downloaded in your working directory you may use deleteGADM=FALSE. The files can be large, especially if you have many countries in your dataset. Use carefully, could cause many large GADM shapefiles saved to your working directory. The default is deleteGADM=TRUE.}
-}
 }
 
 \references{
@@ -30,5 +29,4 @@ GADM DATA is attained through the GADM project website. Commercial use of this f
 \author{
 Neal Thomas Barsch
 }
-
 
