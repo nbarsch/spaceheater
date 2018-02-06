@@ -6,6 +6,7 @@ Author: Neal Thomas Barsch
 Maintainer: Neal Thomas Barsch <neal.barsch@gmail.com>
 Description: Downloads and automatically assesses spatial data given a dataset containing any sort of location data (GPS, place names)
 License: GPL-3
+LazyData: TRUE
 Depends: R (>= 3.3.0)
 Imports: 
       httr, 
@@ -26,4 +27,3 @@ Imports:
       sp, 
       plyr
 URL: https://github.com/nbarsch/spaceheater
-
