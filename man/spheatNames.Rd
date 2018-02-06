@@ -4,7 +4,7 @@
 
 \title{Geocode place names in a dataset}
 
-\description{a vector of names in a dataset with administrative layers determined by GADM layers}
+\description{geocode a vector of names in a dataset with administrative layers determined by GADM layers}
 
 \usage{
 spheatNames(dataset, colname, googleapikey, oride=FALSE, deleteGADM=TRUE)}
