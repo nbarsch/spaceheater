@@ -1,1 +1,41 @@
 # spaceheater
+
+An `R` package that allows flexible geocoding from a column in a data frame of place names or GPS coordinates, and downloads and completes advanced spatial analysis of the locations in such a dataset. 
+
+This package is being updated as of February 2018 and does not yet contain all functions. The base geocoding and WorldPop download functions have been added and are fully functional. 
+
+Example WorldPop tif that Spaceheater can download and analyze:
+
+![Data](/SpaceheaterExampleBangladesh.png?raw=true "Spaceheater Data")
+
+## Installation
+
+```r
+if (!require(devtools)) install.packages("devtools")
+devtools::install_github("nbarsch/spaceheater")
+```
+
+## Usage
+
+```r
+library(spaceheater)
+
+# Geocode my place names or addresses in my data frame:
+spheatNames("myDFname", "myColumnOfNames", "myGoogleAPIKey")
+
+# Also available, see manual for details
+spheatGPS("myDFname", "myColumnOfLatitudes","myColumnOfLongitudes" "myGoogleAPIKey")
+spheatLookup("myGoogleAPIKey")
+
+# Get the possible tif sets from WorldPop UK for Bangladesh
+getWPdatatypes("Bangladesh")
+
+# Get the possible options for tif sets from WorldPop UK for Tanzania Population sets
+getWPoptions("Bangladesh", "Population")
+
+# Download the 2010 Persons per pixel, adjusted to match UN estimates tif for Bangladesh from WorldPop UK
+getWPdownload("Bangladesh", "Population", c("ppp", "adj"), 2010)
+
+```
+
+
