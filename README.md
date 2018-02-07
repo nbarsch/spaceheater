@@ -24,7 +24,7 @@ library(spaceheater)
 spheatNames("myDFname", "myColumnOfNames", "myGoogleAPIKey")
 
 # Also available, see manual for details
-spheatGPS("myDFname", "myColumnOfLatitudes","myColumnOfLongitudes" "myGoogleAPIKey")
+spheatGPS("myDFname", "myColumnOfLatitudes","myColumnOfLongitudes", "myGoogleAPIKey")
 spheatLookup("myGoogleAPIKey")
 
 # Get the possible tif sets from WorldPop UK for Bangladesh
