@@ -1,5 +1,5 @@
 getWPdownload <- function (country, datatype, options, year)  {
-  ###standardize country name, takes care of stuff like Bolivia (Plurinational State of) or tildes like Côte d'Ivoire
+  ###standardize country name, takes care of stuff like Bolivia (Plurinational State of) or countries with accented chars like Côte d'Ivoire
   country <- standardizeCountry(paste(country),fuzzyDist=30)
   year <- as.numeric(year)
   optionschosen <- paste(options, collapse = '-')
