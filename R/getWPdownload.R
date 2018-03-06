@@ -283,6 +283,6 @@ getWPdownload <- function (country, datatype, options, year)  {
     query = parse_url(readme_query_stringdownload)$query,
     progress(),
     verbose(),
-    write_disk(paste0(country,"_", datatype,"_", paste(options, collapse="_"),"_",year), overwrite=TRUE)
+    write_disk(paste0(country,"_", datatype,"_", paste(options, collapse="_"),"_",year, ".tif"), overwrite=TRUE)
   )-> res5
 }
