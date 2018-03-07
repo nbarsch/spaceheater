@@ -43,5 +43,3 @@ Eternal grattitude to StackOverflow member hrbrmstr without whom this function w
 \author{
 Neal Thomas Barsch
 }
-
-
