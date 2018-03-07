@@ -27,3 +27,4 @@ Imports:
       sp, 
       plyr
 URL: https://github.com/nbarsch/spaceheater
+RoxygenNote: 6.0.1

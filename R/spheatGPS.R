@@ -1,3 +1,45 @@
+#' Reverse geocode GPS coordinates in a dataset
+#' 
+#' Reverse geocode latitude and longitude columns in a dataset with
+#' administrative layers determined by GADM layers
+#' 
+#' 
+#' @param dataset (character), the name of the data frame containing a column
+#' of place names. e.g. \code{“mydataframe”}
+#' @param latcol (character), the name of the column in the data frame
+#' containing LATITUDES \code{“mylatcol”}
+#' @param loncol (character), the name of the column in the data frame
+#' containing LONGITUDES \code{“myloncol”}
+#' @param googleapikey (character), a valid Google Maps API key. See
+#' https://developers.google.com/maps/documentation/javascript/get-api-key to
+#' attain one.
+#' @param oride (logical), if you already have the specified shapefile
+#' downloads from GADM for each country in your data frame, you may override
+#' the GADM downloads included in a-heat using oride=TRUE. ONLY do this if you
+#' are sure you have the GADM shapefiles for every country in your set already
+#' in your R working directory. Default is oride=FALSE
+#' @param deleteGADM (logical), if after geocoding you would like to keep the
+#' GADM shapefiles downloaded in your working directory you may use
+#' deleteGADM=FALSE. The files can be large, especially if you have many
+#' countries in your dataset. Use carefully, could cause many large GADM
+#' shapefiles saved to your working directory. The default is deleteGADM=TRUE.
+#' @author Neal Thomas Barsch
+#' @references GADM DATA are attained through the GADM project website.
+#' Commercial use of this function is not allowed without prior permission from
+#' GADM.org. \url{http://gadm.org/}.
+#' @examples
+#' 
+#' 
+#' spheatGPS("myDataframe", "myLatColumnName","myLonColumnName", "mygoogleapikey")
+#' 
+#' #Keeping all GADM shapefiles
+#' spheatGPS("myDataframe", "myLatColumnName","myLonColumnName", "mygoogleapikey", deleteGADM=FALSE)
+#' 
+#' #You already have the GADM shapefiles and don't want to redownload or delete them
+#' spheatGPS("myDataframe", "myLatColumnName","myLonColumnName", "mygoogleapikey", oride=TRUE, deleteGADM=FALSE)
+#' 
+#' 
+#' @export spheatGPS
 spheatGPS <- function (dataset, latcol,loncol, googleapikey, oride=FALSE, deleteGADM=TRUE)  {
   dfname <- get(dataset)
   dfname[,latcol] <- as.numeric(as.character(dfname[,latcol]))

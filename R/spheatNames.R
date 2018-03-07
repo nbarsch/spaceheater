@@ -1,3 +1,43 @@
+#' Geocode place names in a dataset
+#' 
+#' geocode a vector of names in a dataset with administrative layers determined
+#' by GADM layers
+#' 
+#' 
+#' @param dataset (character), the name of the data frame containing a column
+#' of place names. e.g. \code{“mydataframe”}
+#' @param colname (character), the name of the column in the data frame
+#' containing place names e.g. \code{“mycolname”}
+#' @param googleapikey (character), a valid Google Maps API key. See
+#' https://developers.google.com/maps/documentation/javascript/get-api-key to
+#' attain one.
+#' @param oride (logical), if you already have the specified shapefile
+#' downloads from GADM for each country in your data frame, you may override
+#' the GADM downloads included in a-heat using oride=TRUE. ONLY do this if you
+#' are sure you have the GADM shapefiles for every country in your set already
+#' in your R working directory. Default is oride=FALSE
+#' @param deleteGADM (logical), if after geocoding you would like to keep the
+#' GADM shapefiles downloaded in your working directory you may use
+#' deleteGADM=FALSE. The files can be large, especially if you have many
+#' countries in your dataset. Use carefully, could cause many large GADM
+#' shapefiles saved to your working directory. The default is deleteGADM=TRUE.
+#' @author Neal Thomas Barsch
+#' @references GADM DATA are attained through the GADM project website.
+#' Commercial use of this function is not allowed without prior permission from
+#' GADM.org. \url{http://gadm.org/}.
+#' @examples
+#' 
+#' 
+#' spheatNames("myDataframe", "myColWithPlaceNames", "mygoogleapikey")
+#' 
+#' #Keeping all GADM shapefiles
+#' spheatNames("myDataframe", "myColWithPlaceNames", "mygoogleapikey", deleteGADM=FALSE)
+#' 
+#' #You already have the GADM shapefiles and don't want to redownload or delete them
+#' spheatNames("myDataframe", "myColWithPlaceNames", "mygoogleapikey", oride=TRUE, deleteGADM=FALSE)
+#' 
+#' 
+#' @export spheatNames
 spheatNames <- function (dataset, colname, googleapikey, oride=FALSE, deleteGADM=TRUE)  {
   replacebug <-"n"
   dfname <- get(dataset)
