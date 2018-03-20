@@ -1,32 +1,32 @@
 #' Get the available options for a country and datatype set from WorldPopUK
-#' 
+#'
 #' This function pulls what are the available datasets from WorldPop UK for a
 #' given country and datatype. It returns a not available message if the
 #' country typed does not exist on WorldPop. To see the available datatypes for
 #' a country, see getWPdatatypes() which is intended to be used before this
 #' function.
-#' 
+#'
 #' Example options returned are "ppp" for persons per pixel, "pph" for persons
 #' per hectare, "M" or "F" for male/female tagged sets etc. This function
 #' returns all the available options for a given country and datatype.
-#' 
+#'
 #' The codes returned in the WP.options dataframe in "OptionCode" columns
 #' correspond to the options necessary to include in the getWPdownload()
 #' function.
-#' 
+#'
 #' If the function returns the year 9999 in the WP.options dataframe, this
 #' means the filename on WorldPop is not year tagged. The year will be included
 #' if you look up the set manually on WorldPop UK but for the getWPdownload()
 #' function you will need to type 9999 for the year as it corresponds to what
 #' is given here.
-#' 
+#'
 #' As a bonus and to make matching WorldPop sets easier, this function contains
 #' correction algorithms to standardize country names to match WorldPop UK sets
 #' (i.e. WorldPop has "Côte d'Ivoire", you can type "Ivory Coast" and it will
 #' return the WorldPop Côte d'Ivoire set). This function adds a dataframe of
 #' the available sets called WP.options to your working environment.
-#' 
-#' 
+#'
+#'
 #' @param countryname (character), the name of a country you want to see what
 #' data is avaialble from WorldPop for. e.g. \code{“Tanzania”}
 #' @param datatype (character), the datatype you would like to see what options
@@ -35,17 +35,17 @@
 #' @references WorldPop UK data are attained through the WorldPop UK website.
 #' These data are licensensed under the Creative Commons Attribution 4.0
 #' License. \url{http://www.worldpop.org.uk/}.
-#' 
+#'
 #' Eternal grattitude to StackOverflow member hrbrmstr without whom this
 #' function would not have been possible.
 #' @examples
-#' 
-#' 
+#'
+#'
 #' getWPoptions("Tanzania", "Population")
-#' 
+#'
 #' #Example that returns year 9999
 #' getWPoptions("Nigeria", "Stunting")
-#' 
+#'
 #' @export getWPoptions
 getWPoptions <- function (country, datatype)  {
   ###standardize country name, takes care of stuff like Bolivia (Plurinational State of) or tildes like Côte d'Ivoire
@@ -234,11 +234,23 @@ getWPoptions <- function (country, datatype)  {
   downloads <- downloads[!is.na(downloads$years),]
 
   ###Possible Options due to the inexplicable nature of their inconsistent file names
-  possopt <- c("_pph_", "_ppp_", "_pp_", "uncert", "adj","_M.",  "_M_","_F.", "_F_", "interdecile", "povsd", "125", "200","wpipov", "ppipov", "incpov", "mpipov", "ANC", "SBA", "PNC")
+  possopt <- c("_pph_", "_ppp_", "_pp_", "uncert", "adj","_M.",  "_M_","_F.", "_F_",
+               "interdecile", "povsd", "125", "200","wpipov", "ppipov", "incpov",
+               "mpipov", "ANC", "SBA", "PNC",
+               "A0005", "A0510", "A1015",
+               "A1520", "A2025", "A2530",
+               "A3035", "A3540", "A4045",
+               "A4550", "A5055", "A5560",
+               "A6065", "A65PL")
   opttext <- c("Persons per hectare", "Persons per pixel", "per pixel", " uncertainty dataset showing 95% credible intervals",
                "adjusted to match UN estimates", "MALE", "MALE", "FEMALE", "FEMALE", "Uncertainty map", "poverty standard deviation map", "$1.25/day",
                "$2.00/day", "mean wealth index", "mean likelihood of living in poverty per grid square", "Income estimate USD per grid square", "%poverty by Multidimensional Poverty Index",
-               "prob of four or more antenatal care visits at time of delivery", "prob of skilled birth attendance during delivery", "prob of postnatal care received within 48 hours of delivery")
+               "prob of four or more antenatal care visits at time of delivery", "prob of skilled birth attendance during delivery", "prob of postnatal care received within 48 hours of delivery",
+               "number of people age 0-5","number of people age 5-10","number of people age 10-15","number of people age 15-20",
+               "number of people age 20-25","number of people age 25-30","number of people age 30-35",
+               "number of people age 35-40","number of people age 40-45","number of people age 45-50",
+               "number of people age 50-55","number of people age 55-60", "number of people age 60-65",
+               "number of people age 65+")
   possoptdf <- data.frame(possopt, opttext, stringsAsFactors = FALSE)
   groupsubstr <- str_sub(downloads$group_name,4,-4)
 
@@ -289,7 +301,18 @@ getWPoptions <- function (country, datatype)  {
 
 
   ###get the right codes for the function
-  possoptcodes <- c("pph", "ppp", "pp", "uncert", "adj","M",  "M","F", "F", "interdecile", "povsd", "125", "200","wpipov", "ppipov", "incpov", "mpipov", "ANC", "SBA", "PNC")
+  possoptcodes <- c("pph", "ppp", "pp",
+                    "uncert", "adj","M",
+                    "M","F", "F", "interdecile",
+                    "povsd", "125", "200","wpipov",
+                    "ppipov", "incpov", "mpipov",
+                    "ANC", "SBA", "PNC",
+                    "00_05", "05_10", "10_15",
+                    "15_20", "20_25", "25_30",
+                    "30_35", "35_40", "40_45",
+                    "45_50", "50_55", "55_60",
+                    "60_65", "65PL"
+                    )
   possoptcodes <- as.data.frame(cbind(possoptcodes, opttext))
   possoptcodes <- possoptcodes[c(1:6,8,10:nrow(possoptcodes)),]
   names(downpossopt)[names(downpossopt) == 'downpossopt'] <- 'possopt1'

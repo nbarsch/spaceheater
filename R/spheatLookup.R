@@ -1,5 +1,5 @@
 #' Geocode a list of places manually typed into the function in a loop
-#' 
+#'
 #' Geocode a list of places manually typed into spaceheater in a loop with
 #' administrative layers determined by GADM layers. The function will prompt
 #' the user to type place names until the user is finished (indicated by typing
@@ -7,8 +7,8 @@
 #' administrative levels and GPS coordinates. This function is only useful if
 #' your locations are not already in a data frame, see spheatNames() if you
 #' already have locations in data frame format.
-#' 
-#' 
+#'
+#'
 #' @param googleapikey (character), a valid Google Maps API key. See
 #' https://developers.google.com/maps/documentation/javascript/get-api-key to
 #' attain one.
@@ -27,19 +27,19 @@
 #' Commercial use of this function is not allowed without prior permission from
 #' GADM.org. \url{http://gadm.org/}.
 #' @examples
-#' 
-#' 
+#'
+#'
 #' spheatLookup("mygoogleapikey")
-#' 
+#'
 #' #Keeping all GADM shapefiles
 #' spheatLookup("mygoogleapikey", deleteGADM=FALSE)
-#' 
+#'
 #' #You already have the GADM shapefiles and don't want to redownload or delete them
 #' spheatLookup("mygoogleapikey", oride=TRUE, deleteGADM=FALSE)
-#' 
-#' 
+#'
+#'
 #' @export spheatLookup
-spheatLookup <- function (googleapikey, oride=FALSE, deleteGADM=TRUE)  {
+spheatLookupT <- function (googleapikey, oride=FALSE, deleteGADM=TRUE)  {
   replacebug <-"n"
   a <- 1
   locations.df <- NULL
@@ -110,11 +110,12 @@ spheatLookup <- function (googleapikey, oride=FALSE, deleteGADM=TRUE)  {
     }
   }
 
-  masterloc <- rbind.fill(clist)
+  masterloc <- do.call("bind_rows",clist)
+  masterloc <- as.data.frame(masterloc)
   masterloc$lat <- as.numeric(masterloc[,"lat"])
   masterloc$lon <- as.numeric(masterloc[,"lon"])
   masterloc$latlong <- paste0(masterloc[,"lat"],"-",masterloc[,"lon"])
   masterloc <- masterloc[, colSums(is.na(masterloc)) != nrow(masterloc)]
-  MasterSPheat <<- masterloc
+  MasterSPheatT <<- masterloc
 }
 

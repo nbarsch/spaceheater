@@ -1,18 +1,18 @@
 #' Download a dataset from the WorldPopUK site
-#' 
+#'
 #' This function downloads a dataset in .tif format from the WorldPopUK
-#' 
+#'
 #' This function is intended to be used following the getWPdatatypes() and
 #' getWPoptions() functions as the inputs for getWPdownload() are given by the
 #' previous two functions.
-#' 
+#'
 #' As a bonus and to make matching WorldPop sets easier, this function contains
 #' correction algorithms to standardize country names to match WorldPop UK sets
 #' (i.e. WorldPop has "Côte d'Ivoire", you can type "Ivory Coast" and it will
 #' return the WorldPop Côte d'Ivoire set). This function adds a dataframe of
 #' the available sets called WP.options to your working environment.
-#' 
-#' 
+#'
+#'
 #' @param countryname (character), the name of a country you want to see what
 #' data is avaialble from WorldPop for. e.g. \code{“Tanzania”}
 #' @param datatype (character), the datatype you would like to see what options
@@ -24,7 +24,7 @@
 #' getWPoptions() e.g. \code{“ppp”} or \code{c(“F”, "interdecile")}
 #' @param year (numeric), the year of the dataset you would like to download.
 #' Available years are given by the getWPoptions() function.
-#' 
+#'
 #' If a dataset on WorldPop is not year coded in the filename you will need to
 #' type 9999 for the year. This is indicated by the getWPoptions() function.
 #' e.g. \code{2015} or \code{9999}
@@ -32,51 +32,51 @@
 #' @references WorldPop UK data are attained through the WorldPop UK website.
 #' These data are licensensed under the Creative Commons Attribution 4.0
 #' License. \url{http://www.worldpop.org.uk/}.
-#' 
+#'
 #' Eternal grattitude to StackOverflow member hrbrmstr without whom this
 #' function would not have been possible.
 #' @examples
-#' 
-#' 
+#'
+#'
 #' getWPdownload("Tanzania", "Births", "pp", 2015)
-#' 
+#'
 #' #Example that has year 9999 and multiple options
 #' getWPdownload("Nigeria", "Stunting", c("F", "interdecile"), 9999)
-#' 
+#'
 #' ###FULL EXAMPLES###
-#' 
+#'
 #' ###Full Example 1###
 #' #see available Tanzania sets
 #' getWPdatatypes("Tanzania")
-#' 
+#'
 #' #see available options for Tanzania Births Set
 #' getWPoptions("Tanzania", "Births")
-#' 
+#'
 #' #Download as above with included options
 #' getWPdownload("Tanzania", "Births", "pp", 2015)
-#' 
+#'
 #' ###Full Example 2###
 #' getWPdatatypes("Nigeria")
-#' 
+#'
 #' #see available options for Nigeria Stunting Set
 #' getWPoptions("Nigeria", "Stunting")
-#' 
+#'
 #' #Download as above with included options for uncertainty map
 #' getWPdownload("Nigeria", "Stunting", c("F", "interdecile"), 9999)
-#' 
+#'
 #' #or for the dataset NOT the uncertainty map
 #' getWPdownload("Nigeria", "Stunting", "F", 9999)
-#' 
-#' 
-#' 
-#' 
+#'
+#'
+#'
+#'
 #' @export getWPdownload
 getWPdownload <- function (country, datatype, options, year)  {
   ###standardize country name, takes care of stuff like Bolivia (Plurinational State of) or countries with accented chars like Côte d'Ivoire
   country <- standardizeCountry(paste(country),fuzzyDist=30)
   year <- as.numeric(year)
   optionschosen <- paste(options, collapse = '-')
-  
+
   # Need to "prime" the session with a cookie
   res <- GET(url="http://www.worldpop.org.uk/data/data_sources/")
   # Get the page contents
@@ -103,7 +103,7 @@ getWPdownload <- function (country, datatype, options, year)  {
   countryreference <- countryreference[,c(1,2,4)]
   countryreference <- countryreference[!(countryreference$country)=="N/A",]
   world_pop_data <- world_pop_data[!(world_pop_data$country)=="N/A",]
-  
+
   ###Filter country names so they match the desired country
   ###There is probably a better way to do this but I had this code from standardizing country name lists for matching a while back
   countryreference$CountryStandard <- standardizeCountry(countryreference[,"country"], fuzzyDist=20)
@@ -134,19 +134,19 @@ getWPdownload <- function (country, datatype, options, year)  {
   #Filter Country Desired
   world_pop_data <- filter(world_pop_data, CountryStandard %in% countryreference$CountryStandard)
   world_pop_data <- filter(world_pop_data, data_type==paste(datatype))
-  
+
   ##Get country link
   dataset_link <- as.character(world_pop_data[1,"summary_link"])
-  
+
   #Follow the country URL for worldpop#
   GET(url=dataset_link) -> res2
   pg2 <- content(res2)
-  
-  
+
+
   # extract "form" fields (that page does a POST request)
   fields <- html_nodes(pg2, "form#conform > input")
   fields <- set_names(xml_attr(fields, "value"), html_attr(fields, "name"))
-  
+
   ###Submit the form with the field data
   POST(
     url = "http://www.worldpop.org.uk/data/download/",
@@ -166,13 +166,13 @@ getWPdownload <- function (country, datatype, options, year)  {
     ),
     encode = "form"
   ) -> res3
-  
+
   # find the link that has the file list
   pg3 <- content(res3)
   html_nodes(pg3, xpath=".//a[contains(., 'switch to')]") %>%
     html_attr("href") -> file_list_query_string
-  
-  
+
+
   # follow that link (we need to use some of the previous captured fields)
   GET(
     url = "http://www.worldpop.org.uk/data/files/index.php",
@@ -181,25 +181,25 @@ getWPdownload <- function (country, datatype, options, year)  {
       action = "dir"
     )
   ) -> res4
-  
+
   ###Get the datasets on the page###
   pg4 <- content(res4)
   data_frame(
     group_name = html_nodes(pg4, "a.dl") %>% html_text(),
     href = html_nodes(pg4, "a.dl") %>% html_attr("href")
   ) -> downloads
-  
-  
-  
+
+
+
   ###Ditch non tif section
   downloads$istif <- str_sub(downloads$group_name,-4,-1)
   #Some such as senegal are inexplicably .TIF
   downloads$istif <- tolower(downloads$istif)
   downloads <- filter(downloads, istif==".tif")
-  
-  
+
+
   ###WorldPop decided to have super inconsistent filenames
-  
+
   pg4charfile <- as.character(downloads[1,"group_name"])
   pg4charfile <- gsub(' {1,}','',pg4charfile)
   if(substr(pg4charfile,1,6)!="popmap"){
@@ -214,7 +214,7 @@ getWPdownload <- function (country, datatype, options, year)  {
       char11num <- suppressWarnings(!is.na(as.numeric(char11)))
       if(char4num==TRUE & char6num==TRUE){
         downloads$years <-substr(downloads$group_name,4,7)
-        
+
       }
       if(char4num==TRUE & char6num==FALSE){
         downloads$years <-substr(downloads$group_name,4,5)
@@ -257,16 +257,28 @@ getWPdownload <- function (country, datatype, options, year)  {
     downloads$years <- getfouryear(downloads$years)
   }
   downloads <- downloads[!is.na(downloads$years),]
-  
+
   ###Possible Options due to the inexplicable nature of their inconsistent file names
-  possopt <- c("_pph_", "_ppp_", "_pp_", "uncert", "adj","_M.",  "_M_","_F.", "_F_", "interdecile", "povsd", "125", "200","wpipov", "ppipov", "incpov", "mpipov", "ANC", "SBA", "PNC")
+  possopt <- c("_pph_", "_ppp_", "_pp_", "uncert", "adj","_M.",  "_M_","_F.", "_F_",
+               "interdecile", "povsd", "125", "200","wpipov", "ppipov", "incpov",
+               "mpipov", "ANC", "SBA", "PNC",
+               "A0005", "A0510", "A1015",
+               "A1520", "A2025", "A2530",
+               "A3035", "A3540", "A4045",
+               "A4550", "A5055", "A5560",
+               "A6065", "A65PL")
   opttext <- c("Persons per hectare", "Persons per pixel", "per pixel", " uncertainty dataset showing 95% credible intervals",
                "adjusted to match UN estimates", "MALE", "MALE", "FEMALE", "FEMALE", "Uncertainty map", "poverty standard deviation map", "$1.25/day",
                "$2.00/day", "mean wealth index", "mean likelihood of living in poverty per grid square", "Income estimate USD per grid square", "%poverty by Multidimensional Poverty Index",
-               "prob of four or more antenatal care visits at time of delivery", "prob of skilled birth attendance during delivery", "prob of postnatal care received within 48 hours of delivery")
+               "prob of four or more antenatal care visits at time of delivery", "prob of skilled birth attendance during delivery", "prob of postnatal care received within 48 hours of delivery",
+               "number of people age 0-5","number of people age 5-10","number of people age 10-15","number of people age 15-20",
+               "number of people age 20-25","number of people age 25-30","number of people age 30-35",
+               "number of people age 35-40","number of people age 40-45","number of people age 45-50",
+               "number of people age 50-55","number of people age 55-60", "number of people age 60-65",
+               "number of people age 65+")
   possoptdf <- data.frame(possopt, opttext, stringsAsFactors = FALSE)
   groupsubstr <- str_sub(downloads$group_name,4,-4)
-  
+
   ###get options for each file from the worldpop selected country and datatype###
   optionsforchoice<-foreach(a=1:nrow(downloads), .combine=rbind)%do%{
     theoptions<- foreach(b=1:length(opttext), .combine=cbind)%do%{
@@ -295,7 +307,7 @@ getWPdownload <- function (country, datatype, options, year)  {
     coltochange <- ncol(downloads)
     colnames(downloads)[coltochange] <- paste0("possopt",a)
   }
-  
+
   downloads$years <- as.numeric(downloads$years)
   downloads <- downloads[order(downloads$years),]
   ##Subsetting downloads to columns that only contain possopt
@@ -310,11 +322,22 @@ getWPdownload <- function (country, datatype, options, year)  {
   downpossopt <- cbind(downloads$years, downpossopt)
   names(downpossopt)[names(downpossopt) == 'downloads$years'] <- 'years'
   names(downpossopt)[names(downpossopt) == 'V1'] <- 'years'
-  
-  
-  
+
+
+
   ###get the right codes for the function
-  possoptcodes <- c("pph", "ppp", "pp", "uncert", "adj","M",  "M","F", "F", "interdecile", "povsd", "125", "200","wpipov", "ppipov", "incpov", "mpipov", "ANC", "SBA", "PNC")
+  possoptcodes <- c("pph", "ppp", "pp",
+                    "uncert", "adj","M",
+                    "M","F", "F", "interdecile",
+                    "povsd", "125", "200","wpipov",
+                    "ppipov", "incpov", "mpipov",
+                    "ANC", "SBA", "PNC",
+                    "00_05", "05_10", "10_15",
+                    "15_20", "20_25", "25_30",
+                    "30_35", "35_40", "40_45",
+                    "45_50", "50_55", "55_60",
+                    "60_65", "65PL"
+  )
   possoptcodes <- as.data.frame(cbind(possoptcodes, opttext))
   possoptcodes <- possoptcodes[c(1:6,8,10:nrow(possoptcodes)),]
   names(downpossopt)[names(downpossopt) == 'downpossopt'] <- 'possopt1'
@@ -345,12 +368,12 @@ getWPdownload <- function (country, datatype, options, year)  {
       downloads2 <- filter(downloads, downloads$optionspossible==optionschosen)
     }
   }else{downloads2 <- filter(downloads, is.na(downloads$optionspossible))}
-  
-  
-  
+
+
+
   readme_query_stringdownload <- as.character(downloads2[1,"href"])
 
-  
+
   GET(
     url = "http://www.worldpop.org.uk/data/files/index.php",
     query = parse_url(readme_query_stringdownload)$query,

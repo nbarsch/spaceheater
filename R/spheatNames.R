@@ -1,9 +1,9 @@
 #' Geocode place names in a dataset
-#' 
+#'
 #' geocode a vector of names in a dataset with administrative layers determined
 #' by GADM layers
-#' 
-#' 
+#'
+#'
 #' @param dataset (character), the name of the data frame containing a column
 #' of place names. e.g. \code{“mydataframe”}
 #' @param colname (character), the name of the column in the data frame
@@ -21,22 +21,25 @@
 #' deleteGADM=FALSE. The files can be large, especially if you have many
 #' countries in your dataset. Use carefully, could cause many large GADM
 #' shapefiles saved to your working directory. The default is deleteGADM=TRUE.
+#'
+#'
+#'
 #' @author Neal Thomas Barsch
 #' @references GADM DATA are attained through the GADM project website.
 #' Commercial use of this function is not allowed without prior permission from
 #' GADM.org. \url{http://gadm.org/}.
 #' @examples
-#' 
-#' 
+#'
+#'
 #' spheatNames("myDataframe", "myColWithPlaceNames", "mygoogleapikey")
-#' 
+#'
 #' #Keeping all GADM shapefiles
 #' spheatNames("myDataframe", "myColWithPlaceNames", "mygoogleapikey", deleteGADM=FALSE)
-#' 
+#'
 #' #You already have the GADM shapefiles and don't want to redownload or delete them
 #' spheatNames("myDataframe", "myColWithPlaceNames", "mygoogleapikey", oride=TRUE, deleteGADM=FALSE)
-#' 
-#' 
+#'
+#'
 #' @export spheatNames
 spheatNames <- function (dataset, colname, googleapikey, oride=FALSE, deleteGADM=TRUE)  {
   replacebug <-"n"
@@ -127,6 +130,6 @@ spheatNames <- function (dataset, colname, googleapikey, oride=FALSE, deleteGADM
   masterloc$latlong <- paste0(masterloc[,"lat"],"-",masterloc[,"lon"])
   masterout<- left_join(dfname,masterloc, by="namelook")
   masterout <- masterout[, colSums(is.na(masterout)) != nrow(masterout)]
-  MasterSPheat <<- masterout
+  MASTER_NamesExt <<- masterout
 }
 
