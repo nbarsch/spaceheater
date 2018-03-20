@@ -1,9 +1,9 @@
 #' Reverse geocode GPS coordinates in a dataset
-#' 
+#'
 #' Reverse geocode latitude and longitude columns in a dataset with
 #' administrative layers determined by GADM layers
-#' 
-#' 
+#'
+#'
 #' @param dataset (character), the name of the data frame containing a column
 #' of place names. e.g. \code{“mydataframe”}
 #' @param latcol (character), the name of the column in the data frame
@@ -28,17 +28,17 @@
 #' Commercial use of this function is not allowed without prior permission from
 #' GADM.org. \url{http://gadm.org/}.
 #' @examples
-#' 
-#' 
+#'
+#'
 #' spheatGPS("myDataframe", "myLatColumnName","myLonColumnName", "mygoogleapikey")
-#' 
+#'
 #' #Keeping all GADM shapefiles
 #' spheatGPS("myDataframe", "myLatColumnName","myLonColumnName", "mygoogleapikey", deleteGADM=FALSE)
-#' 
+#'
 #' #You already have the GADM shapefiles and don't want to redownload or delete them
 #' spheatGPS("myDataframe", "myLatColumnName","myLonColumnName", "mygoogleapikey", oride=TRUE, deleteGADM=FALSE)
-#' 
-#' 
+#'
+#'
 #' @export spheatGPS
 spheatGPS <- function (dataset, latcol,loncol, googleapikey, oride=FALSE, deleteGADM=TRUE)  {
   dfname <- get(dataset)
@@ -114,5 +114,5 @@ spheatGPS <- function (dataset, latcol,loncol, googleapikey, oride=FALSE, delete
  names(masterloc)[names(masterloc) == "lon"] <- paste(loncol)
  masterloc <- masterloc[, colSums(is.na(masterloc)) != nrow(masterloc)]
  dfname <- suppressMessages(left_join(dfname, masterloc))
- MasterSPheat <<- dfname
+ MASTER_gps <<- dfname
 }

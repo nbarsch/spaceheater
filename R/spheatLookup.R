@@ -39,7 +39,7 @@
 #'
 #'
 #' @export spheatLookup
-spheatLookupT <- function (googleapikey, oride=FALSE, deleteGADM=TRUE)  {
+spheatLookup <- function (googleapikey, oride=FALSE, deleteGADM=TRUE)  {
   replacebug <-"n"
   a <- 1
   locations.df <- NULL
@@ -116,6 +116,6 @@ spheatLookupT <- function (googleapikey, oride=FALSE, deleteGADM=TRUE)  {
   masterloc$lon <- as.numeric(masterloc[,"lon"])
   masterloc$latlong <- paste0(masterloc[,"lat"],"-",masterloc[,"lon"])
   masterloc <- masterloc[, colSums(is.na(masterloc)) != nrow(masterloc)]
-  MasterSPheatT <<- masterloc
+  MASTER_lookup <<- masterloc
 }
 

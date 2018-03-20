@@ -130,6 +130,6 @@ spheatNames <- function (dataset, colname, googleapikey, oride=FALSE, deleteGADM
   masterloc$latlong <- paste0(masterloc[,"lat"],"-",masterloc[,"lon"])
   masterout<- left_join(dfname,masterloc, by="namelook")
   masterout <- masterout[, colSums(is.na(masterout)) != nrow(masterout)]
-  MASTER_NamesExt <<- masterout
+  MASTER_Names <<- masterout
 }
 
