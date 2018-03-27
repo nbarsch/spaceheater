@@ -129,78 +129,77 @@ spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fi
     if(gway.df$status=="ZERO_RESULTS" | isTRUE(gwayerror)){
       if(gway.df$status=="ZERO_RESULTS") {nores <- "no google maps result"}
       if(isTRUE(gwayerror)) {nores <- "internet error, or invalid symbol error"}
+    }
+    n.gwaydf <- nrow(gway.df$results)
+    if(n.gwaydf!=1){
+      resy <- as.data.frame(gway.df$results)
+      clost <- amatch(paste0(lookVector[a]),resy[,"formatted_address"], maxDist=5)
+      gway.df$results <- gway.df$results[clost,]
+    }
 
-      n.gwaydf <- nrow(gway.df$results)
-      if(n.gwaydf!=1){
-        resy <- as.data.frame(gway.df$results)
-        clost <- amatch(paste0(lookVector[a]),resy[,"formatted_address"], maxDist=5)
-        gway.df$results <- gway.df$results[clost,]
+    j <- 1
+    repeat{
+      ###Set default repeat continue to TRUE
+      dcont <- TRUE
+      ###repeats don't have to go through again after choosing one of the 'all' options
+      if(!(isTRUE(skipall))){
+        writeLines(c( "",
+                      "",
+                      paste0("Could not find entry: ", red(lookVector[a])),
+                      paste0("Due to ", red(nores )),
+                      "",
+                      underline(blue("OPTIONS:")),
+                      paste0("RETRY: " ,blue("Hit enter")),
+                      paste0("TYPE CORRECTED PLACE NAME: ", blue("Type the corrected place name for: "),red(lookVector[a])),
+                      paste0("SKIP ENTRY: ", blue("Type 's or skip'")),
+                      paste0("SKIP ALL NOT FOUND ENTRIES: ", blue("Type 'sa or skip all'"))
+        )
+        )
+
+        uinput.newname <- readline(prompt="TYPE AN OPTION GIVEN ABOVE: ")
+
+        ###Some housekeeping
+        uinput.newname <- gsub("^ *|(?<= ) | *$", "", uinput.newname, perl = TRUE)
+        uinput.newname <- tolower(uinput.newname)
+        if(uinput.newname=="s"){uinput.newname <- "skip"}
+        if(uinput.newname=="sa"){uinput.newname <- "skip all"}
+        if(uinput.newname=="skip a"){uinput.newname <- "skip all"}
+        if(uinput.newname=="s all"){uinput.newname <- "skip all"}
+        if(uinput.newname=="s a"){uinput.newname <- "skip all"}
+        if(uinput.newname=="sa"){uinput.newname <- "skip all"}
+        if(uinput.newname=="all"){uinput.newname <- "skip all"}
       }
 
-      j <- 1
-      repeat{
-        ###Set default repeat continue to TRUE
-        dcont <- TRUE
-        ###repeats don't have to go through again after choosing one of the 'all' options
-        if(!(isTRUE(skipall))){
-          writeLines(c( "",
-                        "",
-                        paste0("Could not find entry: ", red(lookVector[a])),
-                        paste0("Due to ", red(nores )),
-                        "",
-                        underline(blue("OPTIONS:")),
-                        paste0("RETRY: " ,blue("Hit enter")),
-                        paste0("TYPE CORRECTED PLACE NAME: ", blue("Type the corrected place name for: "),red(lookVector[a])),
-                        paste0("SKIP ENTRY: ", blue("Type 's or skip'")),
-                        paste0("SKIP ALL NOT FOUND ENTRIES: ", blue("Type 'sa or skip all'"))
-          )
-          )
+      ###axeem and skipall back in play
+      if(isTRUE(skipall)){uinput.newname <- "skip all"}
 
-          uinput.newname <- readline(prompt="TYPE AN OPTION GIVEN ABOVE: ")
-
-          ###Some housekeeping
-          uinput.newname <- gsub("^ *|(?<= ) | *$", "", uinput.newname, perl = TRUE)
-          uinput.newname <- tolower(uinput.newname)
-          if(uinput.newname=="s"){uinput.newname <- "skip"}
-          if(uinput.newname=="sa"){uinput.newname <- "skip all"}
-          if(uinput.newname=="skip a"){uinput.newname <- "skip all"}
-          if(uinput.newname=="s all"){uinput.newname <- "skip all"}
-          if(uinput.newname=="s a"){uinput.newname <- "skip all"}
-          if(uinput.newname=="sa"){uinput.newname <- "skip all"}
-          if(uinput.newname=="all"){uinput.newname <- "skip all"}
-        }
-
-        ###axeem and skipall back in play
-        if(isTRUE(skipall)){uinput.newname <- "skip all"}
-
-        ###all processes that SKIP
-        if(uinput.newname=="skip" | uinput.newname=="skip all"){
-          dfname <- as.data.frame(dfname)
-          coltemp <- (which(dfname$namelook==lookVector[a]))
-          dfname[c(paste(coltemp), collapse=","),"namelook"] <- "SKIP"
-          lookVector[a] <- "SKIP"
-          if(uinput.newname=="skip all"){skipall <- TRUE}
-          break
-        }
-
-
-        ###Set dcont to continue for another google geocode
-        dcont <- TRUE
-        gwayerror <- FALSE
-        if(isTRUE(dcont)){
-          gway.df <- tryCatch(google_geocode(paste(uinput.newname),key=googleapikey),
-                              error=function(e){gwayerror <- TRUE})
-        }
-        ###If new match successful
-        if(!(gway.df$status=="ZERO_RESULTS") & !isTRUE(gwayerror)){
-          dfname <- as.data.frame(dfname)
-          coltemp <- (which(dfname$namelook==lookVector[a]))
-          dfname[c(paste(coltemp), collapse=","),"namelook"] <- uinput.newname
-          lookVector[a] <- uinput.newname
-          break
-        }
-        j <- j+1
+       ###all processes that SKIP
+      if(uinput.newname=="skip" | uinput.newname=="skip all"){
+        dfname <- as.data.frame(dfname)
+        coltemp <- (which(dfname$namelook==lookVector[a]))
+        dfname[c(paste(coltemp), collapse=","),"namelook"] <- "SKIP"
+        lookVector[a] <- "SKIP"
+        if(uinput.newname=="skip all"){skipall <- TRUE}
+        break
       }
+
+
+      ###Set dcont to continue for another google geocode
+      dcont <- TRUE
+      gwayerror <- FALSE
+      if(isTRUE(dcont)){
+        gway.df <- tryCatch(google_geocode(paste(uinput.newname),key=googleapikey),
+                            error=function(e){gwayerror <- TRUE})
+      }
+      ###If new match successful
+      if(!(gway.df$status=="ZERO_RESULTS") & !isTRUE(gwayerror)){
+        dfname <- as.data.frame(dfname)
+        coltemp <- (which(dfname$namelook==lookVector[a]))
+        dfname[c(paste(coltemp), collapse=","),"namelook"] <- uinput.newname
+        lookVector[a] <- uinput.newname
+        break
+      }
+      j <- j+1
     }
     ###If not skip this entry
     if(!(is.na(lookVector[a]))){
