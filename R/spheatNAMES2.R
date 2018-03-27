@@ -129,13 +129,6 @@ spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fi
     if(gway.df$status=="ZERO_RESULTS" | isTRUE(gwayerror)){
       if(gway.df$status=="ZERO_RESULTS") {nores <- "no google maps result"}
       if(isTRUE(gwayerror)) {nores <- "internet error, or invalid symbol error"}
-    }
-    n.gwaydf <- nrow(gway.df$results)
-    if(n.gwaydf!=1){
-      resy <- as.data.frame(gway.df$results)
-      clost <- amatch(paste0(lookVector[a]),resy[,"formatted_address"], maxDist=5)
-      gway.df$results <- gway.df$results[clost,]
-    }
 
     j <- 1
     repeat{
@@ -146,7 +139,7 @@ spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fi
         writeLines(c( "",
                       "",
                       paste0("Could not find entry: ", red(lookVector[a])),
-                      paste0("Due to ", red(nores )),
+                      paste0("Due to ", red(paste0(nores) )),
                       "",
                       underline(blue("OPTIONS:")),
                       paste0("RETRY: " ,blue("Hit enter")),
@@ -201,34 +194,41 @@ spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fi
       }
       j <- j+1
     }
-    ###If not skip this entry
-    if(!(is.na(lookVector[a]))){
-      gway.df<- unlist(gway.df)
-      gway.df<- as.data.frame(gway.df)
-      gway.df <- as.data.frame(gway.df[c("results.geometry.location.lat",
+    }else{
+      n.gwaydf <- nrow(gway.df$results)
+      if(n.gwaydf!=1){
+        resy <- as.data.frame(gway.df$results)
+        clost <- amatch(paste0(lookVector[a]),resy[,"formatted_address"], maxDist=5)
+        gway.df$results <- gway.df$results[clost,]
+      }
+      ###If not skip this entry
+      if(!(is.na(lookVector[a]))){
+        gway.df<- unlist(gway.df)
+        gway.df<- as.data.frame(gway.df)
+        gway.df <- as.data.frame(gway.df[c("results.geometry.location.lat",
                                          "results.geometry.location.lng",
                                          "results.formatted_address"), "gway.df"])
-      colnames(gway.df)<-"gway"
-      gway.df <- t(gway.df)
-      gway.df <- data.frame(r1= row.names(gway.df), gway.df, row.names=NULL)
-      ###Weird new york bug see above, putting original back
-      if(replacebug=="new york,new york"){
-        lookVector[a]<-replacebug
+        colnames(gway.df)<-"gway"
+        gway.df <- t(gway.df)
+        gway.df <- data.frame(r1= row.names(gway.df), gway.df, row.names=NULL)
+        ###Weird new york bug see above, putting original back
+        if(replacebug=="new york,new york"){
+          lookVector[a]<-replacebug
+        }
+        gway.df$namelook <- lookVector[a]
+        gway.df <- gway.df[,2:ncol(gway.df)]
+        colnames(gway.df) <- c("lat", "lon","PlacenameGeocoded", "namelook")
+        replacebug <-"n"
       }
-      gway.df$namelook <- lookVector[a]
-      gway.df <- gway.df[,2:ncol(gway.df)]
-      colnames(gway.df) <- c("lat", "lon","PlacenameGeocoded", "namelook")
-      replacebug <-"n"
-    }
-
-    ###If skip this entry enter NA for merge
-    if(is.na(lookVector[a])){
-      gway.df <- data.frame(
-        lat=as.factor(NA),
-        lon=as.factor(NA),
-        PlacenameGeocoded=as.factor(NA),
-        namelook=as.character("SKIP")
-      )
+      ###If skip this entry enter NA for merge
+      if(is.na(lookVector[a])){
+        gway.df <- data.frame(
+          lat=as.factor(NA),
+          lon=as.factor(NA),
+          PlacenameGeocoded=as.factor(NA),
+          namelook=as.character("SKIP")
+          )
+      }
     }
     setTxtProgressBar(pb, (a/iters.look)*100)
     return(gway.df)
