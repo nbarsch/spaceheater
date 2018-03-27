@@ -112,7 +112,7 @@ spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fi
 
 
   locations.df <- foreach(a=1:iters.look, .combine=rbind) %do% {
-
+  replacebug <- "n"
     ###There is an odd bug where if you look up New York, New York, it thinks you mean the hotel in Las Vegas
     ###Below fixes that small bug (by switching the lookup location to Empire State Building)
     if(lookVector[a]=="new york,new york"){
@@ -129,6 +129,13 @@ spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fi
     if(gway.df$status=="ZERO_RESULTS" | isTRUE(gwayerror)){
       if(gway.df$status=="ZERO_RESULTS") {nores <- "no google maps result"}
       if(isTRUE(gwayerror)) {nores <- "internet error, or invalid symbol error"}
+
+      n.gwaydf <- nrow(gway.df$results)
+      if(n.gwaydf!=1){
+        resy <- as.data.frame(gway.df$results)
+        clost <- amatch(paste0(lookVector[a]),resy[,"formatted_address"], maxDist=5)
+        gway.df$results <- gway.df$results[clost,]
+      }
 
       j <- 1
       repeat{
