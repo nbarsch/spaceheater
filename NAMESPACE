@@ -5,7 +5,6 @@ export(spheatLookup)
 export(getWPdatatypes)
 export(getWPoptions)
 export(getWPdownload)
-export(spheatNAMESextractWP)
 export(extlevel)
 
 
