@@ -113,7 +113,7 @@
 
 
 
-spheatNAMESextractWP <- function (dataset, colname="PN", datatype="Births",
+spheatNAMESextractWPT <- function (dataset, colname="PN", datatype="Births",
                               gadmlevel="lcl", levellimit=0, options, year,
                               fill=TRUE, googleapikey, orideGADM=FALSE,
                               orideWP=FALSE, deleteGADM=TRUE, deleteWP=TRUE,
@@ -421,7 +421,7 @@ spheatNAMESextractWP <- function (dataset, colname="PN", datatype="Births",
 ###For loop for each country in dataset
   for(i in uni.loc[,"iso3c"]){
 
-    if (missing(options)) {
+    if(missing(options)) {
       sink(file="/dev/null")
       getWPoptions(paste0(i), paste0(datatype))
       sink()
@@ -435,7 +435,7 @@ spheatNAMESextractWP <- function (dataset, colname="PN", datatype="Births",
       options <- justoptioncodes
     }
 
-    if (missing(year)) {
+    if(missing(year)) {
       sink(file="/dev/null")
       getWPoptions(paste0(i), paste0(datatype))
       sink()
@@ -493,7 +493,7 @@ spheatNAMESextractWP <- function (dataset, colname="PN", datatype="Births",
 
 
 ###New df.loc starts here (for testing)
-      df.loc<- suppressMessages(suppressWarnings(left_join(sp.locations, over)))
+      df.loc<- left_join(sp.locations, over)
 
       df.loc[grep('^ID_', names(df.loc))] <- lapply(df.loc[grep('^ID_', names(df.loc))], as.character)
       df.loc[grep('iso3c', names(df.loc))] <- lapply(df.loc[grep('iso3c', names(df.loc))], as.character)
@@ -573,9 +573,9 @@ spheatNAMESextractWP <- function (dataset, colname="PN", datatype="Births",
 ###Don't include an isTRUE(noGADM) here because it is taken care of above. noGADM=TRUE can't get here
 
 
-
+      df.loc <<- df.loc
 ###Extract
-      tempframe <- extlevel(spdataframe=df.loc, country=as.character(df.loc[1,"iso3c"]),
+      tempframe <- extlevelT(spdataframe=df.loc, country=as.character(df.loc[1,"iso3c"]),
                             gadmlevel=lcl ,method=method,datatype=datatype, options=options, year=year
                             )
 
@@ -595,8 +595,6 @@ spheatNAMESextractWP <- function (dataset, colname="PN", datatype="Births",
         tempframe[grep('ext', names(tempframe))] <- lapply(tempframe[grep('ext', names(tempframe))], as.integer)
 
 
-###test only delete later
-      testlist5[[a]] <- "NOGADM"
 
       }
 
@@ -604,7 +602,8 @@ spheatNAMESextractWP <- function (dataset, colname="PN", datatype="Births",
 
 
     if(isTRUE(dGADM)){
-      if(isTRUE(fill)){
+      if(isTRUE(fill) & !(as.character(lcl)==0){
+
 
 
 
@@ -623,7 +622,7 @@ spheatNAMESextractWP <- function (dataset, colname="PN", datatype="Births",
           elev <- max(destroyer$level)
           if(elev==levellimit-1){break}
           destroyer <- destroyer[!duplicated(destroyer[,paste0("ID_",elev)]),]
-          tlist[[b]] <- extlevel(spdataframe=destroyer, country=as.character(destroyer[1,"iso3c"]),
+          tlist[[b]] <- extlevelT(spdataframe=destroyer, country=as.character(destroyer[1,"iso3c"]),
                               gadmlevel=destroyer[1,"level"],method=method,datatype=datatype, options=options, year=year
                               )
           b <- b+1
@@ -711,6 +710,6 @@ spheatNAMESextractWP <- function (dataset, colname="PN", datatype="Births",
 
 
   masterout <- suppressMessages(left_join(dfname, masterloc))
-  MasterSPheat <<- masterout
+  MASTER_NamesExt <<- masterout
 }
 

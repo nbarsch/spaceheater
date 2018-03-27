@@ -1,7 +1,7 @@
 
 
 
-extlevel <- function(spdataframe, country,
+extlevelT <- function(spdataframe, country,
                      gadmlevel, method, datatype,
                      options, year)
 {
@@ -196,12 +196,14 @@ extlevel <- function(spdataframe, country,
     }
     else{
     fil.sftemp <- filter(shapetemp, get(paste0("ID_", lcl)) %in% u.templocid)
+
+    ###Error here because
     fil.sftemp$area_a <- st_area(fil.sftemp)
     fil.sftemp$area_a <- as.numeric(fil.sftemp$area_a)
     tempag <- aggregate(area_a~get(paste0("ID_",lcl)), data=fil.sftemp, FUN=sum)
     colnames(tempag)[1] <-  paste0("ID_",lcl)
     fil.sftemp <- fil.sftemp[,1:(ncol(fil.sftemp)-1)]
-    fil.sftemp <- suppressWarnings(suppressMessages(left_join(fil.sftemp, tempag)))
+    fil.sftemp <- left_join(fil.sftemp, tempag)
     fil.sftemp$area_a_kmsq <- fil.sftemp$area_a/1000000
     colnames(fil.sftemp)[colnames(fil.sftemp)=='area_a'] <-  paste0("area_",lcl, "_msq")
     colnames(fil.sftemp)[colnames(fil.sftemp)=='area_a_kmsq'] <-  paste0("area_",lcl, "_kmsq")
@@ -229,19 +231,17 @@ extlevel <- function(spdataframe, country,
 
 
       fil.sftemp <- filter(shapetemp, get(paste0("ID_", lcl)) %in% u.templocid)
-
+      colnames(fil.sftemp)[colnames(fil.sftemp)=='geometry'] <- paste0("geometry",lcl)
       fil.sftemp$area_a <- st_area(fil.sftemp)
       fil.sftemp$area_a <- as.numeric(fil.sftemp$area_a)
       tempag <- aggregate(area_a~get(paste0("ID_",lcl)), data=fil.sftemp, FUN=sum)
       colnames(tempag)[1] <-  paste0("ID_",lcl)
       fil.sftemp <- fil.sftemp[,1:(ncol(fil.sftemp)-1)]
-      fil.sftemp <- suppressWarnings(suppressMessages(left_join(fil.sftemp, tempag)))
+      fil.sftemp <- left_join(fil.sftemp, tempag)
       fil.sftemp$area_a_kmsq <- fil.sftemp$area_a/1000000
       colnames(fil.sftemp)[colnames(fil.sftemp)=='area_a'] <-  paste0("area_",lcl, "_msq")
       colnames(fil.sftemp)[colnames(fil.sftemp)=='area_a_kmsq'] <-  paste0("area_",lcl, "_kmsq")
       df.tempext <- fil.sftemp[,c("ID_0", paste0("ID_",lcl),paste0("area_",lcl,"_msq"), paste0("area_",lcl,"_kmsq"))]
-      st_geometry(df.tempext) <- NULL
-      df.tempext[grep('^ID_', names(df.tempext))] <- lapply(df.tempext[grep('^ID_', names(df.tempext))], as.character)
 
 
     ###DOnt think need this, delete  colnames(df.tempext)[colnames(df.tempext)=='ID_a'] <- paste0("ID_", lcl)
@@ -255,7 +255,6 @@ extlevel <- function(spdataframe, country,
         area_0_kmsq=sumall/1000000,
         stringsAsFactors = FALSE
       )
-      df.tempext[grep('^ID_', names(df.tempext))] <- lapply(df.tempext[grep('^ID_', names(df.tempext))], as.character)
 
     }
 
@@ -322,7 +321,7 @@ extlevel <- function(spdataframe, country,
 
     ###TESTING Delete
 
-    df.tempext <- suppressWarnings(suppressMessages(left_join(df.tempext, dfburn)))
+    df.tempext <- dfburn
 
     colnames(df.tempext)[colnames(df.tempext)=='ext'] <- paste0(method,"_", datatype,"_", options, "_", year, "_",lcl)
     return(df.tempext)
