@@ -1,7 +1,7 @@
 
 
 
-extlevelT <- function(spdataframe, country,
+extlevel <- function(spdataframe, country,
                      gadmlevel, method, datatype,
                      options, year)
 {
