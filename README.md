@@ -2,9 +2,9 @@
 
 An `R` package that allows flexible geocoding from a column in a data frame of place names or GPS coordinates, and downloads and completes advanced spatial analysis of the locations in such a dataset. 
 
-This package is being updated as of February 2018 and does not yet contain all functions. The base geocoding and WorldPop download functions have been added and are fully functional. 
+This package is being updated as of March 2018 and does not yet contain all functions. The base geocoding and WorldPop download functions have been added and are fully functional. The WorldPop extraction code is in beta but available. Upcoming extraction codes that should be available within the next few months include NASA MODIS Satellite layers, NASA NOAA Nightlights layers, and directions/distance calculations within google maps. 
 
-Example WorldPop tif that Spaceheater can download and analyze:
+Example WorldPop tif that Spaceheater can download and analyze (from WorldPop UK):
 
 ![Data](/SpaceheaterExampleBangladesh.png?raw=true "Spaceheater Data")
 
