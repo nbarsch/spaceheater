@@ -41,7 +41,7 @@
 #'
 #'
 #' @export spheatNAMES2
-spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fill=TRUE, skipMissing=FALSE, orideGADM=FALSE, deleteGADM=TRUE)  {
+spheatNAMES2T <- function (dataset, colname, googleapikey, gadmlevel="lowest", fill=TRUE, skipMissing=FALSE, orideGADM=FALSE, deleteGADM=TRUE)  {
 
   ###Get dataset to merge on and column to look up
   ### Replaced dfname <- get(dataset)
@@ -405,8 +405,9 @@ spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fi
                                                       as.data.frame(unique(MASTERstat[,c("ID_0", "CountryName")]))))
   }
   MASTERgeo <<- globalgeo
-  colnames(MASTERstat) <- paste("sp_", colnames(MASTERstat), sep="_")
-  colnames(MASTERstat)[colnames(MASTERstat)=='sp_namelook'] <- "namelook"
+  colnames(MASTERstat) <- paste("sp", colnames(MASTERstat), sep="_")
+  colnames(MASTERstat)[colnames(MASTERstat)=="sp_namelook"] <- "namelook"
+  MASTERstat1 <<- MASTERstat
   MASTERout <<- left_join(dfname, MASTERstat)
   MASTERstat <<- MASTERstat
   writeLines(c("",green("Written to Global Environment:"),
