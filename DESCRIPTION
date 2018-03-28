@@ -18,13 +18,13 @@ Imports:
       reshape2, 
       rangeBuilder,
       foreach, 
+      stringdist,
       stringr, 
       dplyr, 
       googleway,
       countrycode, 
       curl, 
-      RCurl, 
-      sp, 
-      plyr
+      sf,
+      sp
 URL: https://github.com/nbarsch/spaceheater
 RoxygenNote: 6.0.1
