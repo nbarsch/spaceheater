@@ -405,7 +405,9 @@ spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fi
                                                       as.data.frame(unique(MASTERstat[,c("ID_0", "CountryName")]))))
   }
   MASTERgeo <<- globalgeo
-  MASTERout <<- suppressMessages(left_join(dfname, MASTERstat))
+  colnames(MASTERstat) <- paste("sp_", colnames(MASTERstat), sep="_")
+  colnames(MASTERstat)[colnames(MASTERstat)=='sp_namelook'] <- "namelook"
+  MASTERout <<- left_join(dfname, MASTERstat)
   MASTERstat <<- MASTERstat
   writeLines(c("",green("Written to Global Environment:"),
                 "MASTERgeo is your list of geometries. Use it for extraction functions.",
