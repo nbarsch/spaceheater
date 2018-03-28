@@ -220,6 +220,7 @@ spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fi
         colnames(gway.df) <- c("lat", "lon","PlacenameGeocoded", "namelook")
         replacebug <-"n"
       }
+      ####good to here on a47
       ###If skip this entry enter NA for merge
       if(is.na(lookVector[a])){
         gway.df <- data.frame(
@@ -324,7 +325,7 @@ spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fi
       coordinates(sp.locations) <- ~lon+lat
       proj4string(sp.locations)=CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
       sf.locations <- st_as_sf(sp.locations)
-      over <- suppressMessages(suppressWarnings(st_intersection(sf.locations,sptemp)))
+      over <- st_intersection(sf.locations,sptemp)
       st_geometry(over) <- NULL
       over <- suppressMessages(left_join(over, sptemp[,c(paste0("ID_",gadmlevel), "geometry")]))
       sp.locations <- as.data.frame(sp.locations)
@@ -391,18 +392,24 @@ spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fi
       file.remove(paste0("gadm",i,"/"))
     }
   }
-  MASTERgeo <<- globalgeo
   MASTERstat <- list()
   foreach(p=1:length(globalstat))%do%{
     MASTERstat[[p]] <- suppressMessages(Reduce(left_join, globalstat[[p]]))
   }
+  MASTERstat <- suppressWarnings(do.call("bind_rows",MASTERstat))
+
+  ###MASTERgeo <<- globalgeo
+  foreach(g=1:length(globalgeo))%do%{
+    globalgeo[[g]][[1]] <- left_join(globalgeo[[g]][[1]], MASTERstat[,c("ID_0", "CountryName")])
+  }
+
+  MASTERstat <<- MASTERstat
   writeLines(c("",green("Written to Global Environment:"),
                 "MASTERgeo is your list of geometries. Use it for extraction functions.",
                "MASTERout is your dataset bound with newly attached geocoding.",
                "MASTERstat is your dataset of unique locations in the dataset, unbound."))
-  MASTERstat <- suppressWarnings(do.call("bind_rows",MASTERstat))
-  MASTERstat <<- MASTERstat
-  MASTERout <<- suppressMessages(left_join(dfname, MASTERstat))
+
+  MASTERout1 <<- left_join(dfname, MASTERstat)
 }
 
 
