@@ -361,7 +361,7 @@ spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fi
         repeat{
           rgadmlevel <- rgadmlevel - 1
           if(rgadmlevel<0){break}
-          sptemp <- sf::st_read(dsn=paste0("gadm",i), layer=paste0(i,"_adm",rgadmlevel), quiet=TRUE)
+          sptemp <- suppressWarnings(sf::st_read(dsn=paste0("gadm",i), layer=paste0(i,"_adm",rgadmlevel), quiet=TRUE))
           over <- suppressWarnings(suppressMessages(st_intersection(sf.locations,sptemp)))
           over <- over[,c(paste0("ID_",rgadmlevel))]
           st_geometry(over) <- NULL
@@ -400,10 +400,11 @@ spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fi
 
   ###MASTERgeo <<- globalgeo
   foreach(g=1:length(globalgeo))%do%{
-    globalgeo[[g]][[1]] <- left_join(globalgeo[[g]][[1]], MASTERstat[,c("ID_0", "CountryName")])
+    globalgeo[[g]][[1]] <- suppressMessages(left_join(globalgeo[[g]][[1]],
+                                                      MASTERstat[,c("ID_0", "CountryName")]))
   }
   MASTERgeo <<- globalgeo
-  MASTERout1 <<- left_join(dfname, MASTERstat)
+  MASTERout1 <<- suppressMessages(left_join(dfname, MASTERstat))
   MASTERstat <<- MASTERstat
   writeLines(c("",green("Written to Global Environment:"),
                 "MASTERgeo is your list of geometries. Use it for extraction functions.",
