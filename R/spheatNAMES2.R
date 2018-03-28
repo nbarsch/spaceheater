@@ -400,11 +400,12 @@ spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fi
 
   ###MASTERgeo <<- globalgeo
   foreach(g=1:length(globalgeo))%do%{
-    globalgeo[[g]][[1]] <- suppressMessages(left_join(globalgeo[[g]][[1]],
+    n.lgg <- length(globalgeo[[g]])
+    globalgeo[[g]][[n.lgg]] <- suppressMessages(left_join(globalgeo[[g]][[n.lgg]],
                                                       MASTERstat[,c("ID_0", "CountryName")]))
   }
   MASTERgeo <<- globalgeo
-  MASTERout1 <<- suppressMessages(left_join(dfname, MASTERstat))
+  MASTERout <<- suppressMessages(left_join(dfname, MASTERstat))
   MASTERstat <<- MASTERstat
   writeLines(c("",green("Written to Global Environment:"),
                 "MASTERgeo is your list of geometries. Use it for extraction functions.",
