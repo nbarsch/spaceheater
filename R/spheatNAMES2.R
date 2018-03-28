@@ -401,8 +401,8 @@ spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fi
   ###MASTERgeo <<- globalgeo
   foreach(g=1:length(globalgeo))%do%{
     n.lgg <- length(globalgeo[[g]])
-    globalgeo[[g]][[n.lgg]] <- suppressMessages(left_join(globalgeo[[g]][[n.lgg]],
-                                                      MASTERstat[,c("ID_0", "CountryName")]))
+    globalgeo[[g]][[n.lgg]] <- suppressMessages(inner_join(globalgeo[[g]][[n.lgg]],
+                                                      as.data.frame(unique(MASTERstat[,c("ID_0", "CountryName")]))))
   }
   MASTERgeo <<- globalgeo
   MASTERout <<- suppressMessages(left_join(dfname, MASTERstat))
