@@ -407,9 +407,8 @@ spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fi
   MASTERgeo <<- globalgeo
   colnames(MASTERstat) <- paste("sp", colnames(MASTERstat), sep="_")
   colnames(MASTERstat)[colnames(MASTERstat)=="sp_namelook"] <- "namelook"
-  MASTERstat1 <<- MASTERstat
-  MASTERout <<- left_join(dfname, MASTERstat)
   MASTERstat <<- MASTERstat
+  MASTERout <<- suppressMessages(left_join(dfname, MASTERstat))
   writeLines(c("",green("Written to Global Environment:"),
                 "MASTERgeo is your list of geometries. Use it for extraction functions.",
                "MASTERout is your dataset bound with newly attached geocoding.",
