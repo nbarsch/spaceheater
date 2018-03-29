@@ -41,7 +41,7 @@
 #'
 #'
 #' @export spheatNAMES2
-spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fill=TRUE, skipMissing=FALSE, orideGADM=FALSE, deleteGADM=TRUE)  {
+spheatNAMES2T <- function (dataset, colname, googleapikey, gadmlevel="lowest", fill=TRUE, skipMissing=FALSE, orideGADM=FALSE, deleteGADM=TRUE)  {
 
   ###Get dataset to merge on and column to look up
   ### Replaced dfname <- get(dataset)
@@ -83,7 +83,7 @@ spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fi
     if(gadmlevel=="lcl" | gadmlevel=="lowest") {
       load("gadm_levels28.RData")
       gadm_levels2 <- gadm_levels2[,c("iso3c", "level")]
-      gadm_levels2[grep('iso3c', names(gadm_levels2))] <- lapply(gadm_levels2[grep('iso3c', names(gadm_levels2))], as.character)
+      ### deleted gadm_levels2[grep('iso3c', names(gadm_levels2))] <- lapply(gadm_levels2[grep('iso3c', names(gadm_levels2))], as.character)
     }
   }
 
@@ -262,11 +262,9 @@ spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fi
   uni.loc<- uni.loc[!is.na(uni.loc$iso3c),]
 
   ###Get the lowest gadm level available for each country, from loaded dataframe
-  if(gadmlevel=="lowest" | gadmlevel=="lcl"){
-    uni.loc <- suppressMessages(left_join(uni.loc, gadm_levels2[, c("iso3c", "level")]))
-  }
-
+  ### TOOK OUT gadmlevel=="lowest" | ###I'm 99 percent sure unnecessary, due to smallest.file
   if(gadmlevel=="lcl"){
+    uni.loc <- suppressMessages(left_join(uni.loc, gadm_levels2[, c("iso3c", "level")]))
     mins <- uni.loc[,"level"]
     gadmlevel <- min(mins)
   }
@@ -303,7 +301,7 @@ spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fi
     if(isTRUE(dGADM)){
       writeLines(c("",paste0("SHAPEFILE SUCCESS!: ", uni.loc[a,"CountryName"] )))
 
-      if(gadmlevel=="lowest"){
+      if(is.character(gadmlevel)){
       listfiles <-list.files(paste0("gadm",i,"/"))
 
       ###Sometimes license.txt gets in the wrong place
@@ -403,6 +401,7 @@ spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fi
     n.lgg <- length(globalgeo[[g]])
     globalgeo[[g]][[n.lgg]] <- suppressMessages(inner_join(globalgeo[[g]][[n.lgg]],
                                                       as.data.frame(unique(MASTERstat[,c("ID_0", "CountryName")]))))
+    checkin1 <<- TRUE
   }
   MASTERgeo <<- globalgeo
   colnames(MASTERstat) <- paste("sp", colnames(MASTERstat), sep="_")
