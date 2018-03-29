@@ -41,7 +41,7 @@
 #'
 #'
 #' @export spheatNAMES2
-spheatNAMES2T <- function (dataset, colname, googleapikey, gadmlevel="lowest", fill=TRUE, skipMissing=FALSE, orideGADM=FALSE, deleteGADM=TRUE)  {
+spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fill=TRUE, skipMissing=FALSE, orideGADM=FALSE, deleteGADM=TRUE)  {
 
   ###Get dataset to merge on and column to look up
   ### Replaced dfname <- get(dataset)
