@@ -1,13 +1,14 @@
-#' Geocode place names in a dataset
 #'
-#' geocode a vector of names in a dataset with administrative layers determined
-#' by GADM layers
+#' Determine GADM.org administrative division of GPS coordinates from a dataset and
+#' download geometries of dataset locations for later use
 #'
 #'
 #' @param dataset (character), the name of the data frame containing a column
 #' of place names. e.g. \code{“mydataframe”}
-#' @param colname (character), the name of the column in the data frame
-#' containing place names e.g. \code{“mycolname”}
+#' @param latcol (character), the name of the column in the data frame
+#' containing latitude values e.g. \code{“mylatcolname”}
+#' @param loncol (character), the name of the column in the data frame
+#' containing longitude values e.g. \code{“myloncolname”}
 #' @param googleapikey (character), a valid Google Maps API key. See
 #' https://developers.google.com/maps/documentation/javascript/get-api-key to
 #' attain one.
@@ -21,7 +22,7 @@
 #' deleteGADM=FALSE. The files can be large, especially if you have many
 #' countries in your dataset. Use carefully, could cause many large GADM
 #' shapefiles saved to your working directory. The default is deleteGADM=TRUE.
-#'
+
 #'
 #'
 #' @author Neal Thomas Barsch
@@ -31,35 +32,29 @@
 #' @examples
 #'
 #'
-#' spheatNames("myDataframe", "myColWithPlaceNames", "mygoogleapikey")
+#' spheatGPS("myDataframe", "mylatcol", "myloncol", "mygoogleapikey")
 #'
 #' #Keeping all GADM shapefiles
-#' spheatNames("myDataframe", "myColWithPlaceNames", "mygoogleapikey", deleteGADM=FALSE)
+#' spheatGPS("myDataframe", "mylatcol", "myloncol", "mygoogleapikey", deleteGADM=FALSE)
 #'
 #' #You already have the GADM shapefiles and don't want to redownload or delete them
-#' spheatNames("myDataframe", "myColWithPlaceNames", "mygoogleapikey", oride=TRUE, deleteGADM=FALSE)
+#' spheatGPS("myDataframe", "mylatcol", "myloncol", "mygoogleapikey", oride=TRUE, deleteGADM=FALSE)
 #'
 #'
-#' @export spheatNAMES2
-spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fill=TRUE, skipMissing=FALSE, orideGADM=FALSE, deleteGADM=TRUE)  {
+#' @export spheatGPS2
+spheatGPS2 <- function (dataset, latcol="lat", loncol="lon", googleapikey, gadmlevel="lowest", fill=TRUE, skipMissing=FALSE, orideGADM=FALSE, deleteGADM=TRUE)  {
 
   ###Get dataset to merge on and column to look up
   ### Replaced dfname <- get(dataset)
   replacebug <-"n"
   dfname <- dataset
+  dfname$lon <- dfname[,paste0(loncol)]
+  dfname$lat <- dfname[,paste0(latcol)]
+
+
   dfname[grep('ID_', names(dfname))] <- lapply(dfname[grep('ID_', names(dfname))], as.character)
-  dfname$namelookorig <- dfname[,paste0(colname)]
-  dfname$namelook <- tolower(dfname$namelookorig)
-  dfname$namelook <- gsub("^ *|(?<= ) | *$", "", dfname$namelook, perl = TRUE)
-  dfname$namelook <- gsub(", ", ",", dfname$namelook)
 
   ###Minor housekeeping with the names before fed to google
-  lookcol <- dfname[,"namelook"]
-  lookcol <- as.data.frame(lookcol)
-  colnames(lookcol) <- "lookcol"
-  lookcol$lookcol <- as.character(lookcol[,"lookcol"])
-  lookcol <- lookcol[!(is.na(lookcol[,"lookcol"]) | lookcol[,"lookcol"]==""),]
-
 
   ###Housekeeping
   if(is.character(gadmlevel)){
@@ -91,171 +86,28 @@ spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fi
 
 
   ###Taking only unique text lookups and merging later will speed sets with dup locations
-  lookVector <- unique(lookcol)
-  iters.look <- length(lookVector)
 
   #Replace progress bar
 
   print(paste("...Geocoding your locations in dataset, please wait..."))
   pb = txtProgressBar(min = 0, max = 100, initial = 0, style=3)
   ###Making defaults of deleting all and skipping all FALSE
-  skipall <- FALSE
-
-  if ("skipall" %in% ls(envir = .GlobalEnv) && missing(skipall)) {
-    skipall<- get("skipall", envir = .GlobalEnv)
-  }
-  if(isTRUE(skipMissing)){skipall <- TRUE}
 
 
 
-  ###Looking up and geocoding locations (below)
+  dfname$countryplace <- map.where(database="world", dfname$lon, dfname$lat)
+  dfname$CountryName <- sapply(str_split(dfname$countryplace, ":"),"[[",1)
+  dfname$CountryName <- standardizeCountry(dfname$CountryName, fuzzyDist = 20)
 
-
-  locations.df <- foreach(a=1:iters.look, .combine=rbind) %do% {
-  replacebug <- "n"
-    ###There is an odd bug where if you look up New York, New York, it thinks you mean the hotel in Las Vegas
-    ###Below fixes that small bug (by switching the lookup location to Empire State Building)
-    if(lookVector[a]=="new york,new york"){
-      replacebug <- lookVector[a]
-      lookVector[a] <- "empire state building"
-    }
-    gwayerror <- FALSE
-
-    ###geocode text locations w googleway
-    gway.df <- tryCatch(google_geocode(paste0("\"",lookVector[a],"\""),key=googleapikey),
-                        error=function(e){gwayerror <- TRUE})
-
-    ###Give user a chance to type a manual entry not found, or delete or ignore the entry
-    if(gway.df$status=="ZERO_RESULTS" | isTRUE(gwayerror)){
-      if(gway.df$status=="ZERO_RESULTS") {nores <- "no google maps result"}
-      if(isTRUE(gwayerror)) {nores <- "internet error, or invalid symbol error"}
-
-    j <- 1
-    repeat{
-      ###Set default repeat continue to TRUE
-      dcont <- TRUE
-      ###repeats don't have to go through again after choosing one of the 'all' options
-      if(!(isTRUE(skipall))){
-        writeLines(c( "",
-                      "",
-                      paste0("Could not find entry: ", red(lookVector[a])),
-                      paste0("Due to ", red(paste0(nores) )),
-                      "",
-                      underline(blue("OPTIONS:")),
-                      paste0("RETRY: " ,blue("Hit enter")),
-                      paste0("TYPE CORRECTED PLACE NAME: ", blue("Type the corrected place name for: "),red(lookVector[a])),
-                      paste0("SKIP ENTRY: ", blue("Type 's or skip'")),
-                      paste0("SKIP ALL NOT FOUND ENTRIES: ", blue("Type 'sa or skip all'"))
-        )
-        )
-
-        uinput.newname <- readline(prompt="TYPE AN OPTION GIVEN ABOVE: ")
-
-        ###Some housekeeping
-        uinput.newname <- gsub("^ *|(?<= ) | *$", "", uinput.newname, perl = TRUE)
-        uinput.newname <- tolower(uinput.newname)
-        if(uinput.newname=="s"){uinput.newname <- "skip"}
-        if(uinput.newname=="sa"){uinput.newname <- "skip all"}
-        if(uinput.newname=="skip a"){uinput.newname <- "skip all"}
-        if(uinput.newname=="s all"){uinput.newname <- "skip all"}
-        if(uinput.newname=="s a"){uinput.newname <- "skip all"}
-        if(uinput.newname=="sa"){uinput.newname <- "skip all"}
-        if(uinput.newname=="all"){uinput.newname <- "skip all"}
-      }
-
-      ###axeem and skipall back in play
-      if(isTRUE(skipall)){uinput.newname <- "skip all"}
-
-       ###all processes that SKIP
-      if(uinput.newname=="skip" | uinput.newname=="skip all"){
-        dfname <- as.data.frame(dfname)
-        coltemp <- (which(dfname$namelook==lookVector[a]))
-        dfname[c(paste(coltemp), collapse=","),"namelook"] <- "SKIP"
-        lookVector[a] <- "SKIP"
-        if(uinput.newname=="skip all"){skipall <- TRUE}
-        break
-      }
-
-
-      ###Set dcont to continue for another google geocode
-      dcont <- TRUE
-      gwayerror <- FALSE
-      if(isTRUE(dcont)){
-        gway.df <- tryCatch(google_geocode(paste(uinput.newname),key=googleapikey),
-                            error=function(e){gwayerror <- TRUE})
-      }
-      ###If new match successful
-      if(!(gway.df$status=="ZERO_RESULTS") & !isTRUE(gwayerror)){
-        dfname <- as.data.frame(dfname)
-        coltemp <- (which(dfname$namelook==lookVector[a]))
-        dfname[c(paste(coltemp), collapse=","),"namelook"] <- uinput.newname
-        lookVector[a] <- uinput.newname
-        break
-      }
-      j <- j+1
-    }
-    }else{
-      n.gwaydf <- nrow(gway.df$results)
-      if(n.gwaydf!=1){
-        resy <- as.data.frame(gway.df$results)
-        clost <- stringdist::amatch(paste0(lookVector[a]),resy[,"formatted_address"], maxDist=5)
-        gway.df$results <- gway.df$results[clost,]
-      }
-      ###If not skip this entry
-      if(!(is.na(lookVector[a]))){
-        gway.df<- unlist(gway.df)
-        gway.df<- as.data.frame(gway.df)
-        gway.df <- as.data.frame(gway.df[c("results.geometry.location.lat",
-                                         "results.geometry.location.lng",
-                                         "results.formatted_address"), "gway.df"])
-        colnames(gway.df)<-"gway"
-        gway.df <- t(gway.df)
-        gway.df <- data.frame(r1= row.names(gway.df), gway.df, row.names=NULL)
-        ###Weird new york bug see above, putting original back
-        if(replacebug=="new york,new york"){
-          lookVector[a]<-replacebug
-        }
-        gway.df$namelook <- lookVector[a]
-        gway.df <- gway.df[,2:ncol(gway.df)]
-        colnames(gway.df) <- c("lat", "lon","PlacenameGeocoded", "namelook")
-        replacebug <-"n"
-      }
-      ####good to here on a47
-      ###If skip this entry enter NA for merge
-      if(is.na(lookVector[a])){
-        gway.df <- data.frame(
-          lat=as.factor(NA),
-          lon=as.factor(NA),
-          PlacenameGeocoded=as.factor(NA),
-          namelook=as.character("SKIP")
-          )
-      }
-    }
-    setTxtProgressBar(pb, (a/iters.look)*100)
-    return(gway.df)
-  }
-
-
-  ###take out entries commanded to delete
-  locations.df <- filter(locations.df, namelook!="SKIP")
+  locations.df <- dfname[!duplicated(dfname[,c('lon','lat')]),]
   locations.df[grep('^ID_', names(locations.df))] <- lapply(locations.df[grep('^ID_', names(locations.df))], as.character)
-  dfname2 <- unique(dfname[,c("namelook", "namelookorig")])
-  dfname2[grep('^ID_', names(dfname2))] <- lapply(dfname2[grep('^ID_', names(dfname2))], as.character)
-  locations.df <- suppressMessages(left_join(locations.df, dfname2[,c("namelook", "namelookorig")]))
-
-  ###little format housekeeping
-  locations.df$lat <- as.numeric(as.character(locations.df[,"lat"]))
-  locations.df$lon <- as.numeric(as.character(locations.df[,"lon"]))
-  locations.df$PN <- gsub('[0-9]','', as.character(locations.df[,"PlacenameGeocoded"]))
-  locations.df$PN <- gsub(' ,',',', as.character(locations.df[,"PN"]))
-  locations.df$country <- sub(".*,\\s*([^,]+)$", "\\1", locations.df$PN)
-
-  ###function to get a common country name from country entered
-  locations.df$CountryName <- standardizeCountry(locations.df$country, fuzzyDist = 25)
-
-  ###function to get iso3 character code from common country name
   locations.df$iso3c <- suppressWarnings(invisible(countrycode(locations.df[,"CountryName"], 'country.name', 'iso3c')))
   locations.df[grep('iso3c', names(locations.df))] <- lapply(locations.df[grep('iso3c', names(locations.df))], as.character)
+
+  ###little format housekeeping (probably unnecessary with the update, remove in future update)
+  locations.df$lat <- as.numeric(as.character(locations.df[,"lat"]))
+  locations.df$lon <- as.numeric(as.character(locations.df[,"lon"]))
+
 
   ###subset list of countries to work with
   uni.loc<- locations.df[!duplicated(locations.df$iso3c),]
@@ -302,13 +154,13 @@ spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fi
       writeLines(c("",paste0("SHAPEFILE SUCCESS!: ", uni.loc[a,"CountryName"] )))
 
       if(is.character(gadmlevel)){
-      listfiles <-list.files(paste0("gadm",i,"/"))
+        listfiles <-list.files(paste0("gadm",i,"/"))
 
-      ###Sometimes license.txt gets in the wrong place
-      listfiles <- gsub("license.txt","aaa.txt", listfiles)
-      listfiles <- sort(listfiles)
-      smallest.file <- substr(listfiles[length(listfiles)],8,8)
-      gadmlevel <- as.numeric(smallest.file)
+        ###Sometimes license.txt gets in the wrong place
+        listfiles <- gsub("license.txt","aaa.txt", listfiles)
+        listfiles <- sort(listfiles)
+        smallest.file <- substr(listfiles[length(listfiles)],8,8)
+        gadmlevel <- as.numeric(smallest.file)
       }
 
       ###Shapefile read (using sf)
@@ -328,7 +180,6 @@ spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fi
       df.loc <- bind_cols(sp.locations[,c("lat", "lon")], over)
 
 
-
       ### Took out df.loc<- suppressMessages(suppressWarnings(left_join(sp.locations, over)))
 
       df.loc[grep('^ID_', names(df.loc))] <- lapply(df.loc[grep('^ID_', names(df.loc))], as.character)
@@ -342,8 +193,8 @@ spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fi
       justid <- df.loc[ ,  grepl( "ID_" , colnames( df.loc ) ) ]
 
       flist[[1]] <- cbind(justid, df.loc[,c("area_a", "area_a_sqkm", "geometry")])
-      glist[[1]] <- cbind(justid, df.loc[,c("namelook", "PlacenameGeocoded", "lat", "lon",
-                              "CountryName", "iso3c", "area_a", "area_a_sqkm")])
+      glist[[1]] <- cbind(justid, df.loc[,c("countryplace", "lat", "lon",
+                                            "CountryName", "iso3c", "area_a", "area_a_sqkm")])
 
       colnames(flist[[1]])[colnames(flist[[1]])=='geometry'] <- paste0("geometry",gadmlevel)
       colnames(flist[[1]])[colnames(flist[[1]])=='area_a'] <- paste0("area_",gadmlevel,"_Msq")
@@ -369,7 +220,7 @@ spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fi
           over$area_a <- st_area(over$geometry)
           over$area_a <- as.numeric(over$area_a)
           over$area_a_sqkm <- over[,"area_a"]/1000000
-          ### dont think need this: over <- suppressMessages(left_join(over, df.loc[,c(paste0("ID_",rgadmlevel),"namelook")]))
+          ### dont think need this: over <- suppressMessages(left_join(over, df.loc[,c(paste0("ID_",rgadmlevel),"countryplace")]))
           colnames(over)[colnames(over)=='geometry'] <- paste0("geometry",rgadmlevel)
           colnames(over)[colnames(over)=='area_a'] <- paste0("area_",rgadmlevel,"_Msq")
           colnames(over)[colnames(over)=='area_a_sqkm'] <- paste0("area_",rgadmlevel,"_KMsq")
@@ -400,16 +251,17 @@ spheatNAMES2 <- function (dataset, colname, googleapikey, gadmlevel="lowest", fi
   foreach(g=1:length(globalgeo))%do%{
     n.lgg <- length(globalgeo[[g]])
     globalgeo[[g]][[n.lgg]] <- suppressMessages(inner_join(globalgeo[[g]][[n.lgg]],
-                                                      as.data.frame(unique(MASTERstat[,c("ID_0", "CountryName")]))))
+                                                           as.data.frame(unique(MASTERstat[,c("ID_0", "CountryName")]))))
     checkin1 <<- TRUE
   }
   MASTERgeo <<- globalgeo
   colnames(MASTERstat) <- paste("sp", colnames(MASTERstat), sep="_")
-  colnames(MASTERstat)[colnames(MASTERstat)=="sp_namelook"] <- "namelook"
+  colnames(MASTERstat)[colnames(MASTERstat)=="sp_lat"] <- "lat"
+  colnames(MASTERstat)[colnames(MASTERstat)=="sp_lon"] <- "lon"
   MASTERstat <<- MASTERstat
   MASTERout <<- suppressMessages(left_join(dfname, MASTERstat))
   writeLines(c("",green("Written to Global Environment:"),
-                "MASTERgeo is your list of geometries. Use it for extraction functions.",
+               "MASTERgeo is your list of geometries. Use it for extraction functions.",
                "MASTERout is your dataset bound with newly attached geocoding.",
                "MASTERstat is your dataset of unique locations in the dataset, unbound."))
 
