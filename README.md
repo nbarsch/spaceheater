@@ -26,13 +26,13 @@ devtools::install_github("nbarsch/spaceheater")
 
 Using spheatNAMES, spheatGPS, or spheatLOOKUP:
 
-```spheatNAMES(dataset=myDFname, colname="myColumnOfNames", googleapikey="myGoogleAPIKey")```
+```spheatNAMES(dataset=my_df_name, colname="my_column_of_place_names", googleapikey="my_Google_API_Key")```
 
-```spheatGPS(dataset="myDFname", latcol="myColumnOfLatitudes", loncol="myColumnOfLongitudes", googleapikey="myGoogleAPIKey")```
+```spheatGPS(dataset=my_df_name, latcol="my_column_of_latitudes", loncol="my_column_of_latitudes", googleapikey="my_Google_API_Key")```
 
 ##Upcoming not currently available (depreciated geocoder lookup available through spheatLookup_dep, but does NOT work with extraction functions)
 
-```spheatLOOKUP("myGoogleAPIKey")```
+```spheatLOOKUP("my_Google_API_Key")```
 
 
 ## Extraction
