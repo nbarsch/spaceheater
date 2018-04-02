@@ -30,9 +30,9 @@ Spaceheater assumes that you begin with a dataset that has some sort of location
 
 ```spheatGPS(dataset="myDFname", latcol="myColumnOfLatitudes", loncol="myColumnOfLongitudes", googleapikey="myGoogleAPIKey")```
 
-##Upcoming not currently available
+##Upcoming not currently available (depreciated geocoder lookup available through spheatLookup_dep, but does NOT work with extraction functions)
 
-```spheatLookup("myGoogleAPIKey")```
+```spheatLOOKUP("myGoogleAPIKey")```
 
 
 ## Extraction
