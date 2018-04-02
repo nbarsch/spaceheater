@@ -17,7 +17,7 @@ devtools::install_github("nbarsch/spaceheater")
 
 ## Usage
 
-Spaceheater assumes that you begin with a dataset that has some sort of location column(s) (place NAMES or GPS coordinates), or list of places that you would like to look up. You need to feed your dataset to spaceheater so it can be formatted for spaceheater's functions. 
+```Spaceheater``` assumes that you begin with a dataset that has some sort of location column(s) (place NAMES or GPS coordinates), or list of places that you would like to look up. You need to feed your dataset to spaceheater so it can be formatted for spaceheater's functions. 
 
 ## YOU MUST START WITH ONE OF THE FOLLOWING:
 1. ```spheatNAMES()```: if you have a column with any type of place NAMES (addresses, states, cities, counties, villages, etc.).  Input type is very flexible and can be mixed within the location column. 
