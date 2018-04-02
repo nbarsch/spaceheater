@@ -24,7 +24,7 @@ devtools::install_github("nbarsch/spaceheater")
 2. ```spheatGPS()```: if you have a LATITUDE COLUMN and LONGITUDE COLUMN in your dataset.
 3. ```spheatLOOKUP()```: if you want to manually enter place names and create a dataset from scratch (upcoming update, only depreciated available).
 
-## Using spheatNAMES, spheatGPS, or spheatLOOKUP:
+Using spheatNAMES, spheatGPS, or spheatLOOKUP:
 
 ```spheatNAMES(dataset=myDFname, colname="myColumnOfNames", googleapikey="myGoogleAPIKey")```
 
