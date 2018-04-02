@@ -201,6 +201,6 @@ extractWP <- function(datatype, options, year, gadmlevel="lowest", fill=TRUE,
   colnames(MASTERextract) <- paste("sp", colnames(MASTERextract), sep="_")
   MASTERextract <<- MASTERextract
   MASTERbackout1 <<- outdata
-  MASTERout <<- suppressMessages(left_join(outdata, MASTERext))
+  MASTERout <<- suppressMessages(left_join(outdata, MASTERextract))
   cat("Done. MASTERout updated. MASTERextract created. Not available=NA. ")
 }
