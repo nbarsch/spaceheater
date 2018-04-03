@@ -47,6 +47,13 @@ spheatNAMES <- function (dataset, colname, googleapikey, gadmlevel="lowest", fil
   ### Replaced dfname <- get(dataset)
   replacebug <-"n"
   dfname <- dataset
+
+  dfname[,sapply(dfname,is.character)] <- sapply(
+    dfname[,sapply(dfname,is.character)],
+    iconv,"WINDOWS-1252","UTF-8")
+
+
+
   dfname[grep('ID_', names(dfname))] <- lapply(dfname[grep('ID_', names(dfname))], as.character)
   dfname$namelookorig <- dfname[,paste0(colname)]
   dfname$namelook <- tolower(dfname$namelookorig)
