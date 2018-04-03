@@ -110,7 +110,8 @@ spheatNAMES <- function (dataset, colname, googleapikey, gadmlevel="lowest", fil
 
   ###Looking up and geocoding locations (below)
 
-
+  testlist <- list()
+  ### DELETED .combine=rbind put it back
   locations.df <- foreach(a=1:iters.look, .combine=rbind) %do% {
   replacebug <- "n"
     ###There is an odd bug where if you look up New York, New York, it thinks you mean the hotel in Las Vegas
@@ -183,19 +184,20 @@ spheatNAMES <- function (dataset, colname, googleapikey, gadmlevel="lowest", fil
       if(isTRUE(dcont)){
         gway.df <- tryCatch(google_geocode(paste(uinput.newname),key=googleapikey),
                             error=function(e){gwayerror <- TRUE})
+
       }
       ###If new match successful
       if(!(gway.df$status=="ZERO_RESULTS") & !isTRUE(gwayerror)){
-        dfname <- as.data.frame(dfname)
-        coltemp <- (which(dfname$namelook==lookVector[a]))
-        dfname[c(paste(coltemp), collapse=","),"namelook"] <- uinput.newname
-        lookVector[a] <- uinput.newname
         n.gwaydf <- nrow(gway.df$results)
         if(n.gwaydf!=1){
           resy <- as.data.frame(gway.df$results)
           clost <- stringdist::amatch(paste0(lookVector[a]),resy[,"formatted_address"], maxDist=500)
           gway.df$results <- gway.df$results[clost,]
         }
+        dfname <- as.data.frame(dfname)
+        coltemp <- (which(dfname$namelook==lookVector[a]))
+        dfname[c(paste(coltemp), collapse=","),"namelook"] <- uinput.newname
+        lookVector[a] <- uinput.newname
         break
       }
       j <- j+1
@@ -207,6 +209,7 @@ spheatNAMES <- function (dataset, colname, googleapikey, gadmlevel="lowest", fil
         clost <- stringdist::amatch(paste0(lookVector[a]),resy[,"formatted_address"], maxDist=500)
         gway.df$results <- gway.df$results[clost,]
       }
+    }
       ###If not skip this entry
       if(!(is.na(lookVector[a]))){
         gway.df<- unlist(gway.df)
@@ -236,7 +239,6 @@ spheatNAMES <- function (dataset, colname, googleapikey, gadmlevel="lowest", fil
           namelook=as.character("SKIP")
           )
       }
-    }
     setTxtProgressBar(pb, (a/iters.look)*100)
     return(gway.df)
   }
@@ -244,7 +246,7 @@ spheatNAMES <- function (dataset, colname, googleapikey, gadmlevel="lowest", fil
 
   ###take out entries commanded to delete
   locations.df <- filter(locations.df, namelook!="SKIP")
-  locations.df[grep('^ID_', names(locations.df))] <- lapply(locations.df[grep('^ID_', names(locations.df))], as.character)
+  dfnlocations.df[grep('^ID_', names(locations.df))] <- lapply(locations.df[grep('^ID_', names(locations.df))], as.character)
   dfname2 <- unique(dfname[,c("namelook", "namelookorig")])
   dfname2[grep('^ID_', names(dfname2))] <- lapply(dfname2[grep('^ID_', names(dfname2))], as.character)
   locations.df <- suppressMessages(left_join(locations.df, dfname2[,c("namelook", "namelookorig")]))
