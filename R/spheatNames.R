@@ -198,7 +198,7 @@ spheatNAMES <- function (dataset, colname, googleapikey, gadmlevel="lowest", fil
       n.gwaydf <- nrow(gway.df$results)
       if(n.gwaydf!=1){
         resy <- as.data.frame(gway.df$results)
-        clost <- stringdist::amatch(paste0(lookVector[a]),resy[,"formatted_address"], maxDist=5)
+        clost <- stringdist::amatch(paste0(lookVector[a]),resy[,"formatted_address"], maxDist=500)
         gway.df$results <- gway.df$results[clost,]
       }
       ###If not skip this entry
