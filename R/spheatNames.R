@@ -246,7 +246,7 @@ spheatNAMES <- function (dataset, colname, googleapikey, gadmlevel="lowest", fil
 
   ###take out entries commanded to delete
   locations.df <- filter(locations.df, namelook!="SKIP")
-  dfnlocations.df[grep('^ID_', names(locations.df))] <- lapply(locations.df[grep('^ID_', names(locations.df))], as.character)
+  locations.df[grep('^ID_', names(locations.df))] <- lapply(locations.df[grep('^ID_', names(locations.df))], as.character)
   dfname2 <- unique(dfname[,c("namelook", "namelookorig")])
   dfname2[grep('^ID_', names(dfname2))] <- lapply(dfname2[grep('^ID_', names(dfname2))], as.character)
   locations.df <- suppressMessages(left_join(locations.df, dfname2[,c("namelook", "namelookorig")]))
