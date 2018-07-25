@@ -335,5 +335,6 @@ getWPoptions <- function (country, datatype)  {
 
   print(downpossopt)
   WP.options <<- downpossopt
-  print("The above table has also been added to your working environment as dataframe: WP.options")
+  downpossopt
+                                         
 }
