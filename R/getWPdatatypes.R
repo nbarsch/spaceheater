@@ -86,5 +86,5 @@ countryreference <- filter(countryreference, countryreference$CountryStandard==c
 countryreference <- countryreference[,colSums(is.na(countryreference))<nrow(countryreference)]
 print(countryreference[1,])
 WPdata.types <<- countryreference[1,]
-WPdata.types
+countryreference[1,]
 }
