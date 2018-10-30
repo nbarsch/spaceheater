@@ -21,7 +21,6 @@ Imports:
       stringdist,
       stringr, 
       dplyr, 
-      googleway,
       countrycode, 
       curl, 
       sf,
