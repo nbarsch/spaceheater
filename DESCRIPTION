@@ -24,8 +24,7 @@ Imports:
       dplyr, 
       googleway,
       countrycode, 
-      curl,
-      lwgeom, 
+      curl, 
       sf,
       sp
 URL: https://github.com/nbarsch/spaceheater
