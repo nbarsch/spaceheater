@@ -76,7 +76,7 @@ foreach(a=1:nrow(countryreference)) %do% {
 exists <- isTRUE(paste(country) %in% as.character(countryreference$CountryStandard))
 if(exists==FALSE){
   print("It appears this country is not in the WorldPop set, please check and try again")
-  break
+  return("nodata")
 }
 countryreference <- countryreference[,c(1,4,3)]
 world_pop_data$CountryStandard <- countryreference[,2]
