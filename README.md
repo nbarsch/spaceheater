@@ -1,6 +1,8 @@
 # spaceheater
 
-An `R` package that allows easy and flexible adding of spatial variables to any geocoded dataset.  ```spaceheater``` is built to be fully automatic by downloading and completing advanced spatial analysis without requiring advanced coding capability by the user. This enables a wider research audience to be able to utilize advanced spatial controls previously only available to advanced users.
+An `R` package that allows easy and flexible adding of spatial variables to any geocoded dataset.  
+
+```spaceheater``` is built to be fully automatic by downloading and completing advanced spatial analysis without requiring advanced coding capability by the user. This enables a wider research audience to be able to utilize advanced spatial controls previously only available to advanced users.
 
 ```spaceheater``` is being updated as of January 2019 and does not yet contain all functions. The function ```spheatLOOKUP``` is still upcoming, but ```spheatNAMES``` and ```spheatGPS``` are fully functional. WorldPop download and option/datatype lookups are all fully functional.  The WorldPop extraction code is in beta but should be functional, please report any issues.  Upcoming extraction codes that should be available within the next few months include NASA MODIS Satellite layers, NASA NOAA Nightlights layers, and OPEN STREET MAPS road density calculation.
 
