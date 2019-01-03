@@ -38,7 +38,7 @@ Using spheatNAMES, spheatGPS, or spheatLOOKUP:
 
 Complete Extraction ONLY AFTER completing one of the spheat functions
 
-Currently (April 2018) extract code for WorldPop UK rasters are available
+Currently (January 2019) extract code for WorldPop UK rasters are available
 
 ```extractWP(datatype="Births", options="pp", year=2015, gadmlevel="lowest", fill=TRUE, deleteRAST=TRUE)```
 
