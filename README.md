@@ -1,6 +1,6 @@
 # spaceheater
 
-An `R` package that allows easy and flexible adding of spatial variables to any geocoded dataset.  
+```spaceheater``` is an `R` package that allows easy and flexible adding of a variety of spatial variables to any geocoded (lat/lon) dataset.  
 
 ```spaceheater``` is built to be fully automatic by downloading and completing advanced spatial analysis without requiring advanced coding capability by the user. This enables a wider research audience to be able to utilize advanced spatial controls previously only available to advanced users.
 
