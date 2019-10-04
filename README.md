@@ -13,8 +13,8 @@ Example WorldPop tif that Spaceheater can download and analyze (from WorldPop UK
 ## Installation
 
 ```r
-if (!require(devtools)) install.packages("devtools")
-devtools::install_github("nbarsch/spaceheater")
+if (!require(remotes)) install.packages("remotes")
+remotes::install_github("nbarsch/spaceheater")
 ```
 
 ## Usage
