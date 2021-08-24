@@ -4,7 +4,7 @@
 
 ```spaceheater``` is built to be fully automatic by downloading and completing advanced spatial analysis without requiring advanced coding capability by the user. This enables a wider research audience to be able to utilize advanced spatial controls previously only available to advanced users.
 
-```spaceheater``` is being updated as of October 2019 and does not yet contain all functions. The function ```spheatLOOKUP``` is still upcoming, but ```spheatNAMES``` and ```spheatGPS``` are fully functional. WorldPop download and option/datatype lookups are all fully functional.  The WorldPop extraction code is in beta but should be functional, please report any issues.  Upcoming extraction codes that should be available within the next few months include NASA MODIS Satellite layers, NASA NOAA Nightlights layers, and OPEN STREET MAPS road density calculation.
+ ```spheatNAMES``` and ```spheatGPS``` are fully functional. WorldPop download and option/datatype lookups are all fully functional.  The WorldPop extraction code is in beta but should be functional, please report any issues.  Upcoming extraction codes that should be available within the next few months include NASA MODIS Satellite layers, NASA NOAA Nightlights layers, and OPEN STREET MAPS road density calculation.
 
 Example WorldPop tif that Spaceheater can download and analyze (from WorldPop UK):
 
@@ -18,7 +18,7 @@ remotes::install_github("nbarsch/spaceheater")
 ```
 
 ## Usage
-```spaceheater``` can be used with it's built in spatial data downloads as a standalone (i.e. the ```getWPdownload()``` function) -OR- may be used in fully automatic mode by using the SPheat() commands. While some of the fully automatic commands are currently available, many are in alpha testing and will be released in beta very soon (as of January 2019). 
+```spaceheater``` can be used with it's built in spatial data downloads as a standalone (i.e. the ```getWPdownload()``` function) -OR- may be used in fully automatic mode by using the SPheat() commands. 
 
 ## To Complete Extraction of Spatial Data you must geocode your dataset with spaceheater
 1. ```spheatNAMES()```: if you have a column with any type of place NAMES (addresses, states, cities, counties, villages, etc.).  Input type is very flexible and can be mixed within the location column. 
